@@ -366,6 +366,43 @@ Abhimanyu/
 
 Abhimanyu is developed collaboratively by a team of **4 members**, combining software development, artificial intelligence, financial analysis, and data investigation.
 
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=800&size=26&duration=3000&pause=800&color=F59E0B&center=true&vCenter=true&width=520&height=50&lines=%F0%9F%A7%91%E2%80%8D%F0%9F%92%BB+Meet+the+Team;%E2%9C%A8+The+Minds+Behind+Abhimanyu" alt="Meet the Team" />
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" width="200">
+      <img src="https://ui-avatars.com/api/?name=Abhinandan+Saha&size=256&background=0ea5e9&color=ffffff&rounded=true&bold=true&format=png" width="110" alt="Abhinandan Saha" /><br/>
+      <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=15&duration=3000&pause=1000&color=0EA5E9&center=true&vCenter=true&width=200&height=40&lines=1%EF%B8%8F%E2%83%A3+Abhinandan+Saha;%F0%9F%9A%80+Core+Team+Member" alt="Abhinandan Saha" />
+    </td>
+    <td align="center" width="200">
+      <img src="https://ui-avatars.com/api/?name=Abhirup+Das&size=256&background=8b5cf6&color=ffffff&rounded=true&bold=true&format=png" width="110" alt="Abhirup Das" /><br/>
+      <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=15&duration=3000&pause=1000&color=8B5CF6&center=true&vCenter=true&width=200&height=40&lines=2%EF%B8%8F%E2%83%A3+Abhirup+Das;%F0%9F%9A%80+Core+Team+Member" alt="Abhirup Das" />
+    </td>
+    <td align="center" width="200">
+      <img src="https://ui-avatars.com/api/?name=Arijeet+Das&size=256&background=ec4899&color=ffffff&rounded=true&bold=true&format=png" width="110" alt="Arijeet Das" /><br/>
+      <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=15&duration=3000&pause=1000&color=EC4899&center=true&vCenter=true&width=200&height=40&lines=3%EF%B8%8F%E2%83%A3+Arijeet+Das;%F0%9F%9A%80+Core+Team+Member" alt="Arijeet Das" />
+    </td>
+    <td align="center" width="200">
+      <img src="https://ui-avatars.com/api/?name=Aniket+Bej&size=256&background=f59e0b&color=ffffff&rounded=true&bold=true&format=png" width="110" alt="Aniket Bej" /><br/>
+      <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=15&duration=3000&pause=1000&color=F59E0B&center=true&vCenter=true&width=200&height=40&lines=4%EF%B8%8F%E2%83%A3+Aniket+Bej;%F0%9F%9A%80+Core+Team+Member" alt="Aniket Bej" />
+    </td>
+    <td align="center" width="200">
+      <img src="https://ui-avatars.com/api/?name=Aparajita+Sen&size=256&background=10b981&color=ffffff&rounded=true&bold=true&format=png" width="110" alt="Aparajita Sen" /><br/>
+      <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=15&duration=3000&pause=1000&color=10B981&center=true&vCenter=true&width=200&height=40&lines=5%EF%B8%8F%E2%83%A3+Aparajita+Sen;%F0%9F%9A%80+Core+Team+Member" alt="Aparajita Sen" />
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/1-Abhinandan%20Saha-0ea5e9?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/2-Abhirup%20Das-8b5cf6?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/3-Arijeet%20Das-ec4899?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/4-Aniket%20Bej-f59e0b?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/5-Aparajita%20Sen-10b981?style=for-the-badge" />
+</p>
+
 | Focus Area | Responsibility |
 |---|---|
 | 🎨 **Frontend** | Flutter mobile app and Next.js analyst portal |
