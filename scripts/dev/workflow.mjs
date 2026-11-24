@@ -313,6 +313,7 @@ async function refreshDeps(changedFiles = []) {
     ui.info(fd === 'missing' ? 'App dependencies are not installed yet.' : 'Teammates changed the app packages. Updating yours...');
     await C.installFrontend();
   }
+  if (C.frontendDeps() !== 'missing') C.syncEnvFile(PATHS.frontend, '.env.local');
   const wantPy = needsPython(roles) || fs.existsSync(path.join(PATHS.backend, '.venv'));
   if (wantPy && fs.existsSync(path.join(PATHS.backend, 'pyproject.toml'))) {
     const pyChanged = changedFiles.some((f) => /^backend\/(pyproject\.toml|uv\.lock)$/.test(f));

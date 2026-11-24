@@ -115,6 +115,8 @@ export async function setup() {
     const st = C.frontendDeps();
     if (st === 'ok') ui.ok('App dependencies already installed');
     else await C.installFrontend();
+    C.syncEnvFile(PATHS.frontend, '.env.local');
+    ui.hint('Firebase keys go in frontend/.env.local (empty = demo mode). See: dev help firebase');
     ui.hint('To test on your phone: install "Expo Go" from the Play Store / App Store.');
   } else ui.info('Skipped. Run dev setup again anytime to add it.');
 

@@ -118,16 +118,48 @@ Everyone:
 
 Exit criteria: everyone can run app + API locally, the first `feat` commits from each member are on `main`, CI is green.
 
-## 6. Frontend architecture (next steps)
+## 6. Frontend architecture
 
-1. **Data layer**: `@tanstack/react-query` with a typed client in `src/lib/api.ts`; types mirror
-   `API_SPECIFICATION.md` (later generated from FastAPI's OpenAPI schema with `openapi-typescript`).
-2. **Navigation**: tabs on mobile (Overview, Search, Alerts, Reports), top bar on web; company report at
-   `src/app/company/[ticker].tsx`.
-3. **Graph + PDF**: `src/components/dom/RelationshipGraph.tsx` and `EvidencePdf.tsx` as DOM components.
-4. **Offline + push**: persist the query cache; `expo-notifications` for alerts once FCM is configured.
-5. **Auth**: JWT from the API (SECURITY.md), stored with `expo-secure-store` on mobile.
-6. **Shipping**: website as a static export (EAS Hosting, Netlify or Vercel); Android APK via
+### 6.1 Built so far
+
+| Route | Website | Android / iOS app | File |
+|---|---|---|---|
+| `/` | Landing page (shader hero, sample Red Flag report, how it works, domains, agents, safety rules) | No landing page: redirects to log in, onboarding or home | `src/app/index.tsx` -> `src/features/entry/entry(.web).tsx` |
+| `/login`, `/register`, `/forgot-password` | yes | yes | `src/app/(auth)/` |
+| `/onboarding` | yes | yes | `src/features/onboarding/` |
+| `/home` | placeholder ("Successful") on the animated backdrop | same | `src/app/(app)/home.tsx` |
+
+- **Landing is web only by construction.** `index.tsx` re-exports `features/entry/entry`; Metro resolves
+  `entry.web.tsx` for the website and `entry.tsx` for the app, so the landing page code is never in the app bundle
+  (verified on an Android export).
+- **Route guards.** `Stack.Protected` in `src/app/_layout.tsx` with `redirectTo`: signed-out users only see the
+  auth screens, signed-in users without onboarding see `/onboarding`, everyone else `/home`.
+- **Auth.** `src/providers/auth-provider.tsx` over two backends: Firebase Authentication (+ Firestore profile in
+  `users/{uid}`) when `frontend/.env.local` has the keys, otherwise a local demo backend. See
+  [SETUP_AND_WORKFLOW.md](SETUP_AND_WORKFLOW.md) section 15.
+- **Onboarding.** Ten steps: welcome, about you, experience (with a live preview of explanation styles),
+  goals and markets, sectors, watchlist and holdings, red-flag domains and alert threshold, channels and timing
+  (incl. quiet hours, language, number format), consent (DPDP Act 2023), review. Optional steps can be skipped,
+  progress is saved after every step, the profile model mirrors DATA_SCHEMA.md / API_SPECIFICATION.md.
+- **Shader backdrop.** `@shadergradient/react` in a DOM component (`src/components/backdrop/shader-scene.tsx`):
+  lazy-loaded after the page renders on web, inside Expo's DOM WebView on native. `three` is pinned to
+  `~0.186` because 0.187 removed a shader chunk the library uses.
+- **Design system.** `src/constants/theme.ts` (ink neutrals, one teal accent, IBM Plex Sans + Mono, 4px grid,
+  one easing curve) and `src/components/ui/` (Text, Button, TextField, ChoiceCard, Chip, CheckRow, Segmented,
+  EvidenceTag, Notice). The signature detail is the mono evidence tag (`AR FY25 · p.142`) next to every claim.
+
+### 6.2 Next steps
+
+1. **Home and data layer**: replace the placeholder home with the real dashboard; `@tanstack/react-query` with a
+   typed client in `src/lib/api.ts`; types mirror `API_SPECIFICATION.md` (later generated from FastAPI's OpenAPI
+   schema with `openapi-typescript`). The backend verifies Firebase ID tokens instead of issuing passwords itself.
+2. **Navigation**: tabs on mobile (Home, Search, Alerts, Reports), top bar on web; company report at
+   `src/app/(app)/company/[ticker].tsx`.
+3. **Graph + PDF**: `RelationshipGraph` and `EvidencePdf` as DOM components, like the shader backdrop.
+4. **Offline + push**: persist the query cache; `expo-notifications` for alerts (needs `google-services.json`).
+5. **Settings**: edit every onboarding answer, withdraw consents, export and delete data (DPDP Act).
+6. **Legal pages**: Terms of Service and Privacy Policy, linked from register and consent, before any public launch.
+7. **Shipping**: website as a static export (EAS Hosting, Netlify or Vercel); Android APK via
    `npx eas-cli build -p android --profile preview` for demos.
 
 ## 7. Risks and mitigations

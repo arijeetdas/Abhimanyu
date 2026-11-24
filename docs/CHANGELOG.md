@@ -18,6 +18,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
+- Website landing page (web only, never in the app) with an animated `@shadergradient/react` hero, a sample Red Flag Score report, how it works, detection domains, agents and safety rules.
+- Log in, register and password reset screens; route guards with `Stack.Protected`.
+- Auth with Firebase Authentication and Firestore profiles, plus a demo mode that works without Firebase keys.
+- Ten-step onboarding (role, experience and explanation style, goals, markets, sectors, watchlist and holdings, red-flag domains, alert channels and timing, language, number format, DPDP consents) with progress saved after each step.
+- Placeholder home screen ("Successful") on the same animated backdrop.
+- Design system: ink palette, IBM Plex Sans and Mono, UI components and the evidence tag.
 - `dev` team toolkit (`dev.cmd` / `dev` + `scripts/dev/`): one-command setup, start/sync/finish workflow, guided conflict resolution, safety snapshots, undo/rescue, doctor, and `dev help` manual.
 - Expo universal app in `frontend/` (website + Android + iOS) with Abhimanyu design tokens, Overview and Search screens, and a live backend health check.
 - FastAPI service skeleton in `backend/` (Python 3.12, uv): `GET /health`, `GET /api/v1/meta`, settings from `.env`, tests and ruff.
@@ -35,6 +41,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Team toolkit command renamed from `abhi` to `dev` (`dev.cmd`, `dev`, `scripts/dev/`); local state moves from `.abhi/` to `.dev/` automatically. `docs/DEVELOPER_GUIDE.md` merged into `docs/SETUP_AND_WORKFLOW.md`.
 
 ### Fixed
+- Pinned `three` to ~0.186: three 0.187 removed the `cube_uv_reflection_fragment` shader chunk that `@shadergradient/react` needs, which left the gradient blank.
 - Toolkit: Windows short (8.3) folder paths made a valid clone look unlinked, which could reset the branch during a sync; paths are now compared after full expansion, and an existing `.git` is never re-initialised.
 - Backend: empty values in `backend/.env` no longer break settings loading.
 

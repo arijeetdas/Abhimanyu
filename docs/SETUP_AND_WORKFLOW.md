@@ -23,6 +23,7 @@ project, from zero to your first pushed change and beyond.
 12. [Manual installs and tool details](#12-manual-installs-and-tool-details)
 13. [Troubleshooting](#13-troubleshooting)
 14. [Cheat sheet](#14-cheat-sheet)
+15. [Firebase: sign-in and profiles](#15-firebase-sign-in-and-profiles)
 
 **How to type the command on your system**
 
@@ -164,17 +165,20 @@ dev doctor --deep   # also checks that GitHub lets you push
 ## 3. Your first day: from setup to first push
 
 1. Run `dev start` and choose **Backend + website together**.
-   The API opens in a second window and the website opens in your browser.
-2. On the **Overview** screen, the **Backend API** card should say **Online**. That proves the app and the
-   API work together on your PC. (Frontend-only? Choose **Website in the browser**; the card shows Offline,
-   which is fine.)
-3. Optional: choose **App on my phone (Expo Go)** next time, scan the QR code with Expo Go
-   (Android) or the Camera app (iPhone). Phone and PC must be on the same Wi-Fi.
-4. Make a small change, for example add your name to a comment in `frontend/src/app/index.tsx`, and save.
-   The browser reloads automatically.
-5. Press **Ctrl+C** in the terminal. The script asks **"Upload your changes to GitHub now?"**: press Enter.
-6. Answer the commit questions: type **feat**, scope **app**, description "add my name".
-7. The script checks your code, commits, syncs and pushes. The **Uploaded** box shows the commit and a GitHub link.
+   The API opens in a second window and the website opens in your browser on the **landing page**.
+2. Click **Register**, create an account, and walk through the short onboarding. Without Firebase keys the
+   app runs in **demo mode**: accounts are stored only in that browser (see [section 15](#15-firebase-sign-in-and-profiles)).
+3. The placeholder **home** screen says **Successful**. Its **Backend API** row should say **Online**: that
+   proves the app and the API work together on your PC. (Frontend-only? Choose **Website in the browser**;
+   the row shows Offline, which is fine.)
+4. Optional: choose **App on my phone (Expo Go)** next time and scan the QR code with Expo Go (Android) or the
+   Camera app (iPhone). Phone and PC must be on the same Wi-Fi. The app has no landing page: it opens on
+   **Log in**.
+5. Make a small change, for example edit a line of copy in `frontend/src/features/landing/landing-page.tsx`,
+   and save. The browser reloads automatically.
+6. Press **Ctrl+C** in the terminal. The script asks **"Upload your changes to GitHub now?"**: press Enter.
+7. Answer the commit questions: type **feat**, scope **app**, description "add my name".
+8. The script checks your code, commits, syncs and pushes. The **Uploaded** box shows the commit and a GitHub link.
 
 You have now done the full cycle. Every day after this is `dev start` ... work ... `dev finish`.
 
@@ -339,7 +343,7 @@ to GitHub so a teammate can look at it. `main` is never touched. Secrets and hug
 ### 5.12 `dev help [topic]`
 
 Shows this guide in the terminal. Topics: `needs`, `start`, `first-day`, `daily`, `commands`, `run`, `git`,
-`github`, `branches`, `conflicts`, `undo`, `setup`, `troubleshoot`, `cheatsheet`. `dev help all` prints everything.
+`github`, `branches`, `conflicts`, `undo`, `setup`, `troubleshoot`, `cheatsheet`, `firebase`. `dev help all` prints everything.
 
 ### 5.13 Options for every command
 
@@ -739,3 +743,86 @@ The first run asks to create an EAS project and a build profile; accept the defa
 | get unstuck | `dev rescue` | `git rebase --abort` / `git merge --abort` |
 | check my setup | `dev doctor` | |
 | read this guide | `dev help` | |
+
+<!-- topic: firebase -->
+## 15. Firebase: sign-in and profiles
+
+### 15.1 How sign-in works
+
+- The app uses **Firebase Authentication** (email and password) and stores each user's onboarding answers in
+  **Cloud Firestore** at `users/{uid}`.
+- Until the Firebase keys are filled in, it runs in **demo mode**: accounts and profiles are saved only on that
+  device or browser (passwords as salted SHA-256 hashes). The log in screen says so. Demo accounts do not move
+  to Firebase later; just register again.
+- The switch is automatic: when `frontend/.env.local` has the Firebase values, the app uses Firebase.
+  `EXPO_PUBLIC_AUTH_MODE=demo` forces demo mode (handy for offline demos).
+
+### 15.2 What to get from the teammate who owns the Firebase project
+
+For the website and the app in Expo Go, **no JSON file is needed**. Ask for:
+
+1. **The web app config.** Firebase console > Project settings (gear) > General > **Your apps**. If there is
+   no Web app (`</>` icon) yet, they click **Add app > Web**, name it "Abhimanyu web" (no hosting needed).
+   Under **SDK setup and configuration > Config** there are seven values: `apiKey`, `authDomain`,
+   `projectId`, `storageBucket`, `messagingSenderId`, `appId` and `measurementId`.
+   These identify the project; they are not secret, but keep them in `.env.local` (not in Git).
+2. **Email/Password sign-in turned on.** Authentication > Sign-in method > Email/Password > Enable.
+3. **Authorized domains.** Authentication > Settings > Authorized domains: `localhost` is there by default;
+   add the website's domain when it is deployed.
+4. **Cloud Firestore created** (Build > Firestore Database > Create database; region `asia-south1` (Mumbai)
+   is closest), with the rules from 15.4 published.
+5. Optional: add you as a project member (Project settings > Users and permissions) so you can see users and
+   data in the console.
+
+Only later, not for this step:
+
+| File | When it is needed | Where it goes |
+|---|---|---|
+| `google-services.json` | Android push notifications (FCM) or a native Android build. Register an Android app with package `com.abhimanyu.app` | `frontend/`, referenced from `app.json` (`android.googleServicesFile`) |
+| `GoogleService-Info.plist` | iOS push or a native iOS build. Bundle ID `com.abhimanyu.app` | `frontend/`, referenced from `app.json` (`ios.googleServicesFile`) |
+| Service account key (`firebase-adminsdk-....json`) | When the FastAPI backend verifies users or sends pushes | **Secret.** Share privately (never in chat or Git), save outside the repo, set `FIREBASE_CREDENTIALS_PATH` in `backend/.env` |
+
+### 15.3 Put the values in
+
+`dev setup` and `dev start` create `frontend/.env.local` from `frontend/.env.example`. Fill it in:
+
+```bash
+EXPO_PUBLIC_FIREBASE_API_KEY=AIza...
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your-project
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1234567890
+EXPO_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abc123
+EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXX
+```
+
+Then stop the app (Ctrl+C) and run `dev run web` again: Expo reads `.env.local` only at start. The demo
+mode note disappears from the log in screen. Every teammate needs the same values in their own `.env.local`.
+
+### 15.4 Firestore security rules
+
+Each user can read and write only their own profile document:
+
+```text
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
+If Firestore is not set up yet, sign-in still works and profiles stay on the device (a warning appears in the
+browser console). `EXPO_PUBLIC_FIREBASE_USE_FIRESTORE=false` turns the Firestore copy off.
+
+### 15.5 What onboarding stores
+
+`users/{uid}` holds `{ profile, email, updatedAt }`. `profile` follows `docs/DATA_SCHEMA.md` and
+`PATCH /auth/me` in `docs/API_SPECIFICATION.md`: role, experience and explanation style, risk tolerance,
+horizon, goals, exchanges, sectors and market caps, watchlist symbols, how holdings will be added, red-flag
+domains, `notification_prefs` (channels, minimum severity, digest, quiet hours with timezone, optional WhatsApp
+number), report language and number format, and consents with timestamps and a consent version. The code is in
+`frontend/src/lib/profile/types.ts`.
+

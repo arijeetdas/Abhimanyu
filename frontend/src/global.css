@@ -1,16 +1,47 @@
 :root {
-  --font-display:
-    Inter, Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  --font-rounded: 'SF Pro Rounded', ui-rounded, system-ui, sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
   color-scheme: dark;
+  --font-display: 'IBMPlexSans_400Regular', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBMPlexMono_400Regular', 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  --font-rounded: var(--font-display);
+  --font-serif: var(--font-display);
+}
+
+html,
+body {
+  background-color: #0b1015;
 }
 
 body {
-  background-color: #0b1015;
   /* Financial figures line up in columns (UI_UX_GUIDELINES 2.3). */
   font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(66, 214, 164, 0.28);
+}
+
+/* Visible keyboard focus everywhere, quiet for mouse users. */
+:focus-visible {
+  outline: 2px solid #42d6a4;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #e8eef3;
+  -webkit-box-shadow: 0 0 0 1000px #18232d inset;
+  caret-color: #e8eef3;
+  transition: background-color 9999s ease-out 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
