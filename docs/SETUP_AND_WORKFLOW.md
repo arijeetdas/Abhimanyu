@@ -202,6 +202,9 @@ You have now done the full cycle. Every day after this is `dev start` ... work .
 - **Never commit secrets.** API keys go in `backend/.env` (ignored by Git). The dev script and the Git hook block
   common key formats anyway.
 - **Big features go on a branch** (see [section 9](#9-branches-or-main)).
+- **Using an AI assistant** (Claude Code, Codex, Cursor, Copilot, Gemini)? It reads [`RULES.md`](../RULES.md)
+  automatically through `CLAUDE.md`, `AGENTS.md`, `GEMINI.md` or `.github/copilot-instructions.md`. If your tool
+  does not, tell it: "Read RULES.md and follow it". Review what it changes before running `dev finish`.
 
 ### Commit message format
 

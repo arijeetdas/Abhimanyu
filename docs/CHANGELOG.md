@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
+- `RULES.md`: rules every AI coding agent follows (stack locks, structure, design system, auth/data, Git, docs to update, definition of done, lessons learned), with pointer files `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` and `.github/copilot-instructions.md`.
 - Website landing page (web only, never in the app) with an animated `@shadergradient/react` hero, a sample Red Flag Score report, how it works, detection domains, agents and safety rules.
 - Log in, register and password reset screens; route guards with `Stack.Protected`.
 - Auth with Firebase Authentication and Firestore profiles, plus a demo mode that works without Firebase keys.

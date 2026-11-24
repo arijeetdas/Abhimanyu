@@ -49,6 +49,7 @@ PostgreSQL (Supabase), Neo4j, ChromaDB, Celery + Redis.
 
 ```text
 Abhimanyu/
+├── RULES.md                # rules for AI coding agents (AGENTS.md, CLAUDE.md, GEMINI.md point here)
 ├── dev, dev.cmd          # team toolkit launchers (setup, sync, finish, rescue, help)
 ├── scripts/dev/           # toolkit source (Node.js, zero dependencies)
 ├── frontend/               # Expo app: website + Android + iOS

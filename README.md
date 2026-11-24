@@ -296,6 +296,7 @@ The project's technical documentation is maintained in the `docs/` directory.
 | 🧰 [`Tech_Stack.md`](docs/Tech_Stack.md) | Technologies and development tools |
 | 🎨 [`UI_UX_GUIDELINES.md`](docs/UI_UX_GUIDELINES.md) | Interface design and user experience guidelines |
 | 🧭 [`ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md) | Stack decision (Expo universal app), repo layout, team workflow |
+| 🤖 [`RULES.md`](RULES.md) | Rules every AI coding agent follows in this repo (read automatically via `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) |
 | 🧑‍💻 [`SETUP_AND_WORKFLOW.md`](docs/SETUP_AND_WORKFLOW.md) | Every step: setup, running the scripts, Git and GitHub for this project, troubleshooting |
 
 ## 🔬 Our Approach
@@ -391,6 +392,8 @@ curl -fsSLO https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/dev && c
 | ▶️ Start (sync + run the app) | `.dev start` | `./dev start` |
 | ⬆️ Finish (commit + push) | `.dev finish` | `./dev finish` |
 | 🧭 Menu / 🆘 stuck / 📖 manual | `.dev` · `.dev rescue` · `.dev help` | `./dev` · `./dev rescue` · `./dev help` |
+
+🤖 Using an AI coding assistant? It must follow [`RULES.md`](RULES.md) (picked up automatically by Claude Code, Codex, Cursor, Copilot and Gemini).
 
 📖 Full manual, including every step by hand: [`docs/SETUP_AND_WORKFLOW.md`](docs/SETUP_AND_WORKFLOW.md) · 🧭 Why Expo and how we work: [`docs/ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md)
 
