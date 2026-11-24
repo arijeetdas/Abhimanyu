@@ -42,6 +42,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Team toolkit command renamed from `abhi` to `dev` (`dev.cmd`, `dev`, `scripts/dev/`); local state moves from `.abhi/` to `.dev/` automatically. `docs/DEVELOPER_GUIDE.md` merged into `docs/SETUP_AND_WORKFLOW.md`.
 
 ### Fixed
+- Landing page returned HTTP 500 on the dev server (`dev run web`): link buttons passed a style array to `<Link asChild>`; styles are now flattened.
 - Pinned `three` to ~0.186: three 0.187 removed the `cube_uv_reflection_fragment` shader chunk that `@shadergradient/react` needs, which left the gradient blank.
 - Toolkit: Windows short (8.3) folder paths made a valid clone look unlinked, which could reset the branch during a sync; paths are now compared after full expansion, and an existing `.git` is never re-initialised.
 - Backend: empty values in `backend/.env` no longer break settings loading.

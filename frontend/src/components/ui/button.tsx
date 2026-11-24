@@ -93,7 +93,8 @@ export function Button({
       accessibilityRole={href ? 'link' : 'button'}
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       accessibilityHint={accessibilityHint}
-      style={[fullWidth && styles.full, Platform.OS === 'web' && ({ cursor: inactive ? 'default' : 'pointer' } as ViewStyle)]}>
+      // Flattened: <Link asChild> (expo-router Slot) rejects style arrays on its child.
+      style={StyleSheet.flatten([fullWidth && styles.full, Platform.OS === 'web' && ({ cursor: inactive ? 'default' : 'pointer' } as ViewStyle)])}>
       {(state) => body(state as unknown as WebState)}
     </Pressable>
   );

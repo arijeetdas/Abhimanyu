@@ -227,6 +227,7 @@ Run what applies before saying a task is finished, and report the real results (
 npx tsc --noEmit
 npx expo lint
 npx expo export --platform web          # routing, static rendering
+npx expo start --web                    # then open every route you touched: the dev server is stricter than export
 npx expo export --platform android      # when touching native code, platform files or the entry split
 # backend/
 uv run ruff check .
@@ -254,6 +255,8 @@ for f in scripts/dev/*.mjs; do node --check "$f"; done   # when touching the too
   `firebase-auth-init.native.ts` with a typed cast.
 - Expo inlines `EXPO_PUBLIC_*` only with full static property access.
 - Browsers report the timezone `Asia/Calcutta`; store `Asia/Kolkata`.
+- The child of `<Link asChild>` must get a single style object (`StyleSheet.flatten`), not an array. The
+  production export only warns, but the dev server answers HTTP 500, so always open pages on `npx expo start`.
 - Windows short (8.3) paths made a clone look "unlinked" to the toolkit; always compare real paths.
 
 ---
