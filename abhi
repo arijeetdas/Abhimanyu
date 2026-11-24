@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# ======================================================================
+#  Abhimanyu team toolkit - macOS / Linux / Git Bash launcher
+#
+#    ./abhi            interactive menu
+#    ./abhi start      sync with the team, update dependencies, run the app
+#    ./abhi finish     commit your work and push it to GitHub
+#    ./abhi help       every command + manual steps
+#
+#  First time on a new machine: put this file in an empty "Abhimanyu"
+#  folder, run `chmod +x abhi && ./abhi`. It installs Git + Node.js if
+#  possible, downloads the project, then hands over to scripts/abhi/index.mjs.
+# ======================================================================
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_URL="https://github.com/arijeetdas/Abhimanyu.git"
+cd "$ROOT"
+
+say() { printf '  [abhi] %s\n' "$*"; }
+have() { command -v "$1" >/dev/null 2>&1; }
+
+install_pkg() { # $1 = name, $2 = brew formula, $3 = apt package
+  say "$1 is not installed."
+  if [[ "$OSTYPE" == darwin* ]]; then
+    if have brew; then brew install "$2"; else
+      say "Install Homebrew first: https://brew.sh  (then run ./abhi again)"; exit 1
+    fi
+  elif have apt-get && [ -n "${3:-}" ]; then
+    say "Installing $1 with apt (you may be asked for your password)..."
+    sudo apt-get update -y && sudo apt-get install -y "$3"
+  else
+    say "Please install $1 manually and run ./abhi again."; exit 1
+  fi
+}
+
+have git || install_pkg "Git" git git
+if ! have node; then
+  if [[ "$OSTYPE" == darwin* ]]; then
+    install_pkg "Node.js" node ""
+  else
+    say "Node.js is required. Recommended (no sudo):"
+    say "  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash"
+    say "  then open a new terminal and run:  nvm install --lts"
+    exit 1
+  fi
+fi
+
+if [ ! -f "$ROOT/scripts/abhi/index.mjs" ]; then
+  say "First run: downloading the project from GitHub into $ROOT"
+  others="$(ls -A | grep -v -x -e abhi -e abhi.cmd -e .git || true)"
+  if [ -n "$others" ]; then
+    say "This folder is not empty. Files with the same names as project files will be replaced."
+    read -r -p "         Continue? (y/N) " ok
+    [[ "$ok" =~ ^[yY]$ ]] || exit 1
+  fi
+  [ -d .git ] || git init -q
+  git symbolic-ref HEAD refs/heads/main
+  git remote get-url origin >/dev/null 2>&1 || git remote add origin "$REPO_URL"
+  if ! git fetch origin main; then
+    say "Could not download. Check your internet, accept the collaborator invite at"
+    say "https://github.com/arijeetdas/Abhimanyu/invitations, or run: git clone $REPO_URL"
+    exit 1
+  fi
+  git reset -q origin/main
+  git checkout -- . ":(exclude)abhi"
+  git branch -q --set-upstream-to=origin/main main
+  chmod +x "$ROOT/abhi" "$ROOT/.githooks/"* 2>/dev/null || true
+  say "Project downloaded."
+fi
+
+exec node "$ROOT/scripts/abhi/index.mjs" "$@"

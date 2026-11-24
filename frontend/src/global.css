@@ -1,0 +1,16 @@
+:root {
+  --font-display:
+    Inter, Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-rounded: 'SF Pro Rounded', ui-rounded, system-ui, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0b1015;
+  /* Financial figures line up in columns (UI_UX_GUIDELINES 2.3). */
+  font-variant-numeric: tabular-nums;
+}

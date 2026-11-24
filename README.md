@@ -22,8 +22,9 @@
   <img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white" />
   <img src="https://img.shields.io/badge/Neo4j-008CC1?style=flat-square&logo=neo4j&logoColor=white" />
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" />
-  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" />
+  <img src="https://img.shields.io/badge/React%20Native-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
+  <img src="https://img.shields.io/badge/Expo-000020?style=flat-square&logo=expo&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white" />
 </p>
 
@@ -234,8 +235,9 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph Clients
-        M[📱 Flutter Mobile App<br/>alerts and quick lookup]
-        W[💻 Next.js Analyst Portal<br/>graphs and PDF inspector]
+        X[⚛️ One Expo codebase]
+        M[📱 Android / iOS App<br/>alerts and quick lookup]
+        W[💻 Web Portal<br/>graphs and PDF inspector]
     end
     subgraph Backend
         API[⚡ FastAPI]
@@ -250,6 +252,8 @@ flowchart TB
     subgraph Sources
         S[🏛️ BSE / NSE / MCA-21 / Financial Data]
     end
+    X -.-> M
+    X -.-> W
     M --> API
     W --> API
     API --> Q
@@ -263,8 +267,9 @@ flowchart TB
 
 | Layer | Highlights |
 |---|---|
-| 📱 **Mobile (Flutter)** | BLoC state management, Hive offline cache, Firebase push alerts |
-| 💻 **Web (Next.js 14)** | Interactive relationship graph, split-screen PDF inspector with highlighted evidence |
+| ⚛️ **App (Expo + React Native)** | One TypeScript codebase for the website **and** the Android/iOS app (Expo Router) |
+| 💻 **Web** | Interactive relationship graph, split-screen PDF inspector with highlighted evidence |
+| 📱 **Mobile** | Quick lookup, offline report cache, push alerts (expo-notifications / FCM) |
 | ⚡ **Backend** | FastAPI with asynchronous jobs so heavy analysis never blocks the app |
 | 🧠 **Agents** | LangGraph orchestration with parallel specialist agents |
 | 🗄️ **Data** | PostgreSQL for records, Neo4j for relationships, vector store for document search |
@@ -290,6 +295,8 @@ The project's technical documentation is maintained in the `docs/` directory.
 | 🔐 [`SECURITY.md`](docs/SECURITY.md) | Security architecture and practices |
 | 🧰 [`Tech_Stack.md`](docs/Tech_Stack.md) | Technologies and development tools |
 | 🎨 [`UI_UX_GUIDELINES.md`](docs/UI_UX_GUIDELINES.md) | Interface design and user experience guidelines |
+| 🧭 [`ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md) | Stack decision (Expo universal app), repo layout, team workflow |
+| 🧑‍💻 [`DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md) | Setup, daily workflow, Git/GitHub by hand, troubleshooting |
 
 ## 🔬 Our Approach
 
@@ -330,8 +337,8 @@ The complete technology stack, frameworks, databases, AI models, and infrastruct
 | ⚡ Backend | Python, FastAPI, Celery, Redis |
 | 🗄️ Databases | PostgreSQL (Supabase), Neo4j, ChromaDB |
 | 🕷️ Data Collection | Playwright, BeautifulSoup, Tesseract OCR |
-| 💻 Frontend | Next.js 14, Tailwind CSS, Cytoscape.js, PDF.js |
-| 📱 Mobile | Flutter, BLoC, Hive, Firebase Cloud Messaging |
+| 💻 Web + 📱 Mobile | Expo (React Native + React Native Web), Expo Router, TypeScript, TanStack Query, Cytoscape.js, PDF.js |
+| 🔔 Alerts | expo-notifications (Firebase Cloud Messaging / APNs) |
 
 > 💸 The prototype is designed to run on **free-tier and open-source tools**.
 
@@ -354,13 +361,38 @@ The complete technology stack, frameworks, databases, AI models, and infrastruct
 
 ```text
 Abhimanyu/
+├── ⚙️ abhi / abhi.cmd       # Team toolkit: setup, sync, finish, rescue, help
+├── 📁 frontend/             # Expo app: website + Android + iOS (one codebase)
+├── 📁 backend/              # FastAPI service (agents, ingestion, workers to come)
 ├── 📁 docs/                 # Full technical documentation
-├── 📁 backend/              # FastAPI app, agents, ingestion, workers   (planned)
-├── 📁 web/                  # Next.js analyst portal                    (planned)
-├── 📁 mobile/               # Flutter app                               (planned)
-├── 📁 infra/                # Docker and deployment configs             (planned)
+├── 📁 scripts/abhi/         # Toolkit source
+├── 📁 .github/workflows/    # CI: type-check, lint, build, tests
 └── 📄 README.md
 ```
+
+## 🚀 Getting Started (team)
+
+**First time on a PC.** Create an empty `Abhimanyu` folder, open a terminal in it, and run:
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/abhi.cmd -OutFile abhi.cmd; .abhi setup
+```
+
+```bash
+# macOS / Linux
+curl -fsSLO https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/abhi && chmod +x abhi && ./abhi setup
+```
+
+**Every session:**
+
+| | Windows | macOS / Linux |
+|---|---|---|
+| ▶️ Start (sync + run the app) | `.abhi start` | `./abhi start` |
+| ⬆️ Finish (commit + push) | `.abhi finish` | `./abhi finish` |
+| 🧭 Menu / 🆘 stuck / 📖 manual | `.abhi` · `.abhi rescue` · `.abhi help` | `./abhi` · `./abhi rescue` · `./abhi help` |
+
+📖 Full manual, including every step by hand: [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md) · 🧭 Why Expo and how we work: [`docs/ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md)
 
 ## 👥 Development Team
 
@@ -405,7 +437,7 @@ Abhimanyu is developed collaboratively by a team of **4 members**, combining sof
 
 | Focus Area | Responsibility |
 |---|---|
-| 🎨 **Frontend** | Flutter mobile app and Next.js analyst portal |
+| 🎨 **Frontend** | Expo app: website + Android/iOS from one codebase |
 | 🕷️ **Data Pipelines** | Scrapers, filings ingestion, database loading |
 | 🤖 **Agentic AI** | LangGraph orchestration, document analysis, prompts |
 | 🧮 **ML and Graph** | Anomaly detection, forensic metrics, Neo4j graph |
@@ -416,11 +448,12 @@ Our goal is to build an intelligent system that makes corporate financial invest
 
 Contributions and ideas are welcome.
 
-1. 🍴 Fork the repository
-2. 🌿 Create a feature branch
+1. ▶️ Run `abhi start` to get the latest work
+2. 🌿 For bigger features, `abhi branch` creates a feature branch
 3. ✍️ Update the relevant file in `docs/` if your change affects design
-4. 📝 Add an entry to [`docs/CHANGELOG.md`](docs/CHANGELOG.md)
-5. 🚀 Open a pull request
+4. 📝 `abhi finish` commits, adds a [`CHANGELOG`](docs/CHANGELOG.md) entry, and pushes (or opens a pull request)
+
+Outside contributors: fork the repository and open a pull request.
 
 ## ⚠️ Disclaimer
 

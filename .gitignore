@@ -1,0 +1,62 @@
+# ── Secrets: never commit these (use the matching .env.example instead) ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*service-account*.json
+firebase-adminsdk*.json
+google-services.json
+GoogleService-Info.plist
+
+# ── abhi toolkit local state (snapshots live inside .git, logs here) ──
+.abhi/
+
+# ── Node / Expo (frontend) ──
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+npm-debug.*
+*.tsbuildinfo
+# Generated native projects (Expo Continuous Native Generation)
+/frontend/ios/
+/frontend/android/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+.kotlin/
+
+# ── Python (backend, data, ml) ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# ── Local data, models and databases (share via cloud storage, not Git) ──
+/data/
+chroma/
+*.sqlite3
+*.db
+*.parquet
+*.pt
+*.onnx
+*.ckpt
+
+# ── OS / editors ──
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+*.orig
+*.orig.*
+*.log

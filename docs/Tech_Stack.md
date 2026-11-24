@@ -29,6 +29,11 @@ independently reviewed.
 
 ## 2. High-Level Technology Matrix
 
+> **Frontend update (2026-11-24):** the web dashboard and the mobile app are now **one Expo (React Native)
+> codebase** in `frontend/` instead of separate Next.js and Flutter projects. Rows below that mention Next.js,
+> Flutter, BLoC, Hive or Tailwind map to their Expo equivalents in section 3 and in
+> [ENGINEERING_PLAN.md](ENGINEERING_PLAN.md). Backend, AI, data and ML choices are unchanged.
+
   -----------------------------------------------------------------------
   Layer                   Selected technology     Purpose
   ----------------------- ----------------------- -----------------------
@@ -122,40 +127,60 @@ provider policies can change; verify them before deployment.
 
 ## 3. Frontend
 
-### 3.1 Web Dashboard --- Next.js 14
+### 3.1 One universal app --- Expo (React Native) + Expo Router
 
-**Selected technologies** - Next.js 14 with App Router - React -
-Tailwind CSS - Cytoscape.js or Vis.js - PDF.js
+The website and the Android/iOS app share one TypeScript codebase in `frontend/`.
+Rationale and trade-offs: [ENGINEERING_PLAN.md](ENGINEERING_PLAN.md) section 1.
 
-**Responsibilities** - Company search and ticker lookup. - Forensic risk
-dashboard and investigation reports. - Interactive director and
-corporate-entity relationship graphs. - Split-screen PDF inspection. -
-Navigation from a detected red flag to the relevant report passage. -
-Display of evidence, metrics, and agent-generated explanations.
+  -----------------------------------------------------------------------
+  Concern                 Technology              Notes
+  ----------------------- ----------------------- -----------------------
+  Framework               Expo SDK + React        Web via React Native
+                          Native + TypeScript     Web, mobile via EAS
 
-**Graph visualization:** Cytoscape.js is the proposed option for
-rendering interactive entity networks. Vis.js is an alternative; select
-one for the initial implementation rather than integrating both by
-default.
+  Routing                 Expo Router             File-based, like the
+                                                  Next.js App Router
 
-**PDF inspection:** PDF.js will render annual reports in the browser.
-The application should associate extracted evidence with page and
-bounding-box coordinates where available, so an analyst can navigate to
-the source passage.
+  Styling                 Design tokens           UI_UX_GUIDELINES.md
+                          (`theme.ts`) +          palette; NativeWind
+                          StyleSheet              optional later
 
-### 3.2 Mobile Application --- Flutter
+  Server data             TanStack Query          Replaces BLoC for API
+                                                  state and caching
 
-**Selected technologies** - Flutter - BLoC state management - Hive local
-storage - Firebase Cloud Messaging
+  Local UI state          Zustand                 Small, explicit stores
 
-**Responsibilities** - Quick company/ticker lookup. - View company risk
-summaries and high-priority flags. - Receive push notifications for
-relevant new alerts. - Cache previously retrieved company reports for
-offline reading.
+  Offline cache           Query persistence +     Replaces Hive
+                          MMKV / AsyncStorage     
 
-BLoC separates business logic and network events from UI rendering. Hive
-provides lightweight local caching; it is not the platform's primary
-shared database.
+  Push notifications      expo-notifications      FCM (Android) and APNs
+                                                  (iOS) underneath
+
+  Relationship graph      Cytoscape.js in an      One implementation for
+                          Expo DOM component      web and mobile
+
+  PDF evidence viewer     PDF.js in an Expo DOM   Page + bounding-box
+                          component               highlights
+
+  Testing on devices      Expo Go / dev builds    No Android Studio
+                                                  needed day to day
+  -----------------------------------------------------------------------
+
+**Responsibilities (unchanged from the proposal)** - Company search and
+ticker lookup. - Forensic risk dashboard and investigation reports. -
+Interactive director and corporate-entity relationship graphs. -
+Split-screen PDF inspection with navigation from a red flag to the
+source passage. - Mobile quick lookup, high-priority flags, push alerts,
+and offline reading of previously fetched reports.
+
+**Web vs mobile layout.** Wide screens get the analyst layout (side-by-side
+graph and PDF inspector); phones get the quick-lookup layout. Use
+responsive layout and, where a screen differs a lot, platform files
+(`screen.web.tsx` / `screen.tsx`).
+
+**Adding packages.** Always `npx expo install <package>` so versions
+match the Expo SDK. Libraries with native code need a development build
+instead of Expo Go.
 
 ## 4. Backend and API Layer
 
@@ -469,8 +494,7 @@ directory structure explicitly mandated by the proposal.
 Abhimanyu/
 │
 ├── frontend/
-│   ├── web/                    # Next.js 14 dashboard
-│   └── mobile/                 # Flutter application
+│   └── (one Expo app)          # website + Android + iOS (see ENGINEERING_PLAN.md)
 │
 ├── backend/
 │   ├── app/

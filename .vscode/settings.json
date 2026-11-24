@@ -1,0 +1,18 @@
+{
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.exclude": { "**/__pycache__": true, "**/.pytest_cache": true, "**/.ruff_cache": true },
+  "git.autofetch": true,
+  "git.rebaseWhenSync": true,
+  "git.mergeEditor": true,
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "eslint.workingDirectories": ["frontend"],
+  "python.defaultInterpreterPath": "backend/.venv",
+  "[typescript][typescriptreact]": {
+    "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" }
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": { "source.organizeImports": "explicit" }
+  }
+}

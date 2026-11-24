@@ -18,6 +18,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
+- `abhi` team toolkit (`abhi.cmd` / `abhi` + `scripts/abhi/`): one-command setup, start/sync/finish workflow, guided conflict resolution, safety snapshots, undo/rescue, doctor, and `abhi help` manual.
+- Expo universal app in `frontend/` (website + Android + iOS) with Abhimanyu design tokens, Overview and Search screens, and a live backend health check.
+- FastAPI service skeleton in `backend/` (Python 3.12, uv): `GET /health`, `GET /api/v1/meta`, settings from `.env`, tests and ruff.
+- CI workflow (app type-check, lint, web build; backend lint and tests; toolkit smoke test) and a pull request template.
+- Pre-commit hook that blocks API keys, passwords and files over 50 MB.
+- `docs/ENGINEERING_PLAN.md` and `docs/DEVELOPER_GUIDE.md`.
 - Ingestion pipeline for BSE/NSE announcements, annual reports, and shareholding patterns.
 - Filing parser with OCR fallback for scanned documents.
 - Promoter and director relationship graph builder.
@@ -25,7 +31,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Investor alerts via in-app and email channels.
 
 ### Changed
-- _Nothing yet._
+- Frontend stack: one Expo (React Native) codebase replaces the separate Next.js 14 web portal and Flutter app (see `ENGINEERING_PLAN.md`).
 
 ### Fixed
 - _Nothing yet._

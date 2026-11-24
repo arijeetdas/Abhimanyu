@@ -1,0 +1,8 @@
+#!/bin/sh
+# Abhimanyu safety check: blocks API keys, passwords and huge files from being committed,
+# including commits made from VS Code or GitHub Desktop. Installed by `abhi setup`
+# (git config core.hooksPath .githooks).
+# False alarm? Commit once with:  git commit --no-verify
+[ -n "$ABHI_SKIP_HOOK" ] && exit 0
+command -v node >/dev/null 2>&1 || exit 0
+exec node "$(git rev-parse --show-toplevel)/scripts/abhi/index.mjs" hook pre-commit --plain

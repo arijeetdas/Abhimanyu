@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "expo.vscode-expo-tools",
+    "dbaeumer.vscode-eslint",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "editorconfig.editorconfig",
+    "eamodio.gitlens"
+  ]
+}

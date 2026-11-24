@@ -1,0 +1,32 @@
+# Same line endings on every OS, so Windows and macOS teammates never fight over CRLF/LF.
+* text=auto eol=lf
+
+# Windows launchers must keep CRLF, byte-for-byte (also when downloaded raw from GitHub).
+*.cmd -text
+*.bat -text
+*.ps1 text eol=crlf
+
+# Shell scripts must stay LF.
+abhi text eol=lf
+*.sh text eol=lf
+.githooks/* text eol=lf
+
+# Everyone appends to the changelog: keep both sides instead of conflicting.
+docs/CHANGELOG.md merge=union
+
+# Lock files: never try to line-merge them by hand; regenerate instead.
+frontend/package-lock.json -diff linguist-generated
+backend/uv.lock -diff linguist-generated
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
