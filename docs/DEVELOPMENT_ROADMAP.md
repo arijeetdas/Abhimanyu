@@ -16,9 +16,10 @@ development sequence for a four-member CSE project team.
 
 The proposed system combines:
 
--   A Flutter mobile application for quick ticker lookups, cached
-    reports, and push alerts.
--   A Next.js web dashboard for detailed forensic investigation.
+-   One Expo (React Native) app, in `frontend/`, that ships as both:
+    -   a mobile application (Android/iOS) for quick ticker lookups,
+        cached reports, and push alerts, and
+    -   a web dashboard for detailed forensic investigation.
 -   A FastAPI backend and asynchronous processing pipeline.
 -   Data ingestion for financial statements, exchange announcements,
     annual reports, and director relationships.
@@ -60,9 +61,9 @@ Task Allocation (4-Member Strategy)**.
   ----------------------------------------------------------------------------
   Member            Proposal role     Primary ownership  Key deliverables
   ----------------- ----------------- ------------------ ---------------------
-  Member 1          Frontend Lead     Flutter mobile app BLoC state, mobile
-                                      and Next.js web    alerts UI, ticker
-                                      dashboard          lookup,
+  Member 1          Frontend Lead     Expo app (web +    TanStack Query state,
+                                      Android/iOS)       mobile alerts UI,
+                                                         ticker lookup,
                                                          Cytoscape.js/Vis.js
                                                          graph viewer, PDF.js
                                                          split reader
@@ -124,9 +125,9 @@ source proposal.
 **Goal:** Make the project runnable and allow all four members to work
 in parallel.
 
-**Member 1 --- Frontend** - Create the Next.js 14 App Router project. -
-Create the Flutter application. - Establish shared design tokens and
-basic navigation. - Build placeholder screens for company lookup,
+**Member 1 --- Frontend** - Extend the Expo app in `frontend/` (already
+scaffolded: Overview + Search screens, theme tokens, API client). -
+Establish shared design tokens and basic navigation. - Build placeholder screens for company lookup,
 dashboard, reports, graph, and alerts.
 
 **Member 2 --- Data** - Inspect the intended BSE/NSE announcement and
@@ -268,11 +269,11 @@ presented as confirmed spoofing or fraud.
 
 **Goal:** Connect the main user interfaces to working backend services.
 
-**Member 1** - Complete the Next.js analyst workflow. - Integrate
-Cytoscape.js or Vis.js for interactive company/director relationships. -
-Integrate PDF.js split-screen inspection and evidence navigation. -
-Implement Flutter ticker lookup, cached report view using Hive, and BLoC
-state handling.
+**Member 1** - Complete the web analyst workflow. - Integrate
+Cytoscape.js (Expo DOM component) for interactive company/director
+relationships. - Integrate PDF.js split-screen inspection and evidence
+navigation. - Implement mobile ticker lookup, cached report view
+(persisted TanStack Query cache), and loading/error state handling.
 
 **Member 2** - Stabilize ingestion status and source metadata APIs. -
 Add retry/error states for failed retrievals. - Provide realistic sample
@@ -295,7 +296,7 @@ partial, unavailable, and failed analysis.
 
 **Goal:** Make the complete system behave consistently.
 
-**Member 1** - Integrate Firebase Cloud Messaging (FCM) in Flutter. -
+**Member 1** - Integrate push alerts with expo-notifications (FCM). -
 Implement notification navigation to the relevant company/report. - Test
 offline cached report access.
 
@@ -385,7 +386,7 @@ disclosures.
 
   M6 --- Interfaces       Web dashboard, graph    M1, M3--M5
   integrated              viewer, PDF inspector,  
-                          Flutter lookup/cache    
+                          mobile lookup/cache     
 
   M7 --- Alerts and       FCM test, end-to-end    M6
   validation ready        tests, reliability      
@@ -591,7 +592,7 @@ rather than showing disconnected screens.
 7.  Show market-microstructure results only if suitable order-book data
     is available.
 8.  Show the Meta CIO report and how it combines specialist findings.
-9.  Open the same company's report in the Flutter app.
+9.  Open the same company's report in the mobile app (Expo Go or APK).
 10. Demonstrate a test push alert if FCM is configured.
 
 Every displayed result should be marked as live-source, sample-data,
@@ -610,8 +611,9 @@ The roadmap is derived from the supplied seven-page
     example.
 -   **Page 4:** BSE/NSE announcements, financial fundamentals, MCA-21
     director network, annual reports, and vector/graph storage.
--   **Page 5:** Flutter mobile app, BLoC, Hive, FCM, Next.js dashboard,
-    Cytoscape.js/Vis.js, and PDF.js.
+-   **Page 5:** Mobile app, offline cache, FCM alerts, web dashboard,
+    Cytoscape.js/Vis.js, and PDF.js (all delivered by the single Expo
+    app; see `ENGINEERING_PLAN.md`).
 -   **Page 6:** FastAPI/Uvicorn, LangGraph/LangChain, Gemini/Groq,
     MiniLM, Neo4j/Memgraph, Supabase PostgreSQL, ChromaDB, and
     asynchronous processing.

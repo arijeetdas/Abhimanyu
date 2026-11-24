@@ -21,7 +21,14 @@ export const gitOut = (args, opts) => {
 export const gitNet = (args, opts = {}) => git(args, { ...NET, ...opts });
 
 const norm = (p) => {
-  const r = path.resolve(p);
+  // realpath.native expands Windows 8.3 short names (C:\Users\ARIJEE~1) and resolves symlinks/junctions,
+  // so the same folder always compares equal however it was reached.
+  let r = path.resolve(p);
+  try {
+    r = fs.realpathSync.native(r);
+  } catch {
+    /* keep the resolved path */
+  }
   return isWin ? r.toLowerCase() : r;
 };
 
@@ -29,16 +36,19 @@ export function isRepo() {
   const top = gitOut(['rev-parse', '--show-toplevel']);
   return !!top && norm(top) === norm(ROOT);
 }
+
+/** True when this folder itself has a .git (even if Git cannot read it right now). */
+export const hasOwnGitDir = () => fs.existsSync(path.join(ROOT, '.git'));
 export const gitDir = () => gitOut(['rev-parse', '--absolute-git-dir']);
 export const branch = () => gitOut(['symbolic-ref', '--short', '-q', 'HEAD']);
 export const hasCommits = () => git(['rev-parse', '--verify', '-q', 'HEAD'], { quiet: true }).ok;
 export const refExists = (ref) => git(['rev-parse', '--verify', '-q', ref], { quiet: true }).ok;
 export const sha = (ref = 'HEAD', short = false) => gitOut(['rev-parse', ...(short ? ['--short'] : []), ref]);
 export const remoteUrl = () => gitOut(['remote', 'get-url', 'origin']);
-// ABHI_REPO_URL lets a mirror/fork (or the toolkit's own tests) count as the team remote.
+// DEV_REPO_URL lets a mirror/fork (or the toolkit's own tests) count as the team remote.
 export const isOurRemote = (url) =>
   new RegExp(`github\\.com[/:]${REPO.owner}/${REPO.name}(\\.git)?/?$`, 'i').test(url || '') ||
-  (!!process.env.ABHI_REPO_URL && url === process.env.ABHI_REPO_URL);
+  (!!process.env.DEV_REPO_URL && url === process.env.DEV_REPO_URL);
 
 export function identity() {
   return { name: gitOut(['config', 'user.name']), email: gitOut(['config', 'user.email']) };
@@ -133,7 +143,7 @@ export const isPushed = (rev = 'HEAD') => !!gitOut(['branch', '-r', '--contains'
 
 // ─── Safety snapshots ────────────────────────────────────────────────────────
 // A snapshot is a hidden commit of EVERYTHING in the folder (tracked, modified and new files,
-// minus ignored ones) stored under refs/abhi/snapshots/. It never touches your files, index or
+// minus ignored ones) stored under refs/dev/snapshots/. It never touches your files, index or
 // branches, and is taken before every risky operation, so nothing can be lost.
 
 const stamp = () => new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '-');
@@ -141,10 +151,10 @@ const stamp = () => new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/
 export function snapshot(label) {
   const d = gitDir();
   if (!d) return null;
-  const tmp = path.join(d, 'abhi-snapshot.index');
+  const tmp = path.join(d, 'dev-snapshot.index');
   const env = { GIT_INDEX_FILE: tmp };
   const id = identity();
-  const who = id.name && id.email ? {} : { GIT_AUTHOR_NAME: 'abhi', GIT_AUTHOR_EMAIL: 'abhi@localhost', GIT_COMMITTER_NAME: 'abhi', GIT_COMMITTER_EMAIL: 'abhi@localhost' };
+  const who = id.name && id.email ? {} : { GIT_AUTHOR_NAME: 'dev', GIT_AUTHOR_EMAIL: 'dev@localhost', GIT_COMMITTER_NAME: 'dev', GIT_COMMITTER_EMAIL: 'dev@localhost' };
   try {
     const realIndex = path.join(d, 'index');
     if (fs.existsSync(realIndex)) fs.copyFileSync(realIndex, tmp);
@@ -152,9 +162,9 @@ export function snapshot(label) {
     const tree = gitOut(['write-tree'], { env });
     if (!tree) return null;
     const parent = hasCommits() ? ['-p', 'HEAD'] : [];
-    const commit = gitOut(['commit-tree', tree, ...parent, '-m', `abhi snapshot: ${label}`], { env: who });
+    const commit = gitOut(['commit-tree', tree, ...parent, '-m', `dev snapshot: ${label}`], { env: who });
     if (!commit) return null;
-    const ref = `refs/abhi/snapshots/${stamp()}-${label.replace(/[^a-z0-9-]+/gi, '-').toLowerCase()}`;
+    const ref = `refs/dev/snapshots/${stamp()}-${label.replace(/[^a-z0-9-]+/gi, '-').toLowerCase()}`;
     git(['update-ref', ref, commit], { quiet: true });
     pruneSnapshots();
     return { ref, sha: commit, short: commit.slice(0, 8) };
@@ -164,7 +174,7 @@ export function snapshot(label) {
 }
 
 export function listSnapshots() {
-  const o = gitOut(['for-each-ref', '--sort=-refname', '--format=%(refname)%1f%(objectname)%1f%(creatordate:relative)%1f%(creatordate:unix)', 'refs/abhi/snapshots']);
+  const o = gitOut(['for-each-ref', '--sort=-refname', '--format=%(refname)%1f%(objectname)%1f%(creatordate:relative)%1f%(creatordate:unix)', 'refs/dev/snapshots']);
   return o
     .split('\n')
     .filter(Boolean)

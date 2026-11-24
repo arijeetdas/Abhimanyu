@@ -1,4 +1,4 @@
-// "abhi help <topic>": renders sections of docs/DEVELOPER_GUIDE.md in the terminal.
+// "dev help <topic>": renders sections of docs/SETUP_AND_WORKFLOW.md in the terminal.
 // Sections are marked in the Markdown with  <!-- topic: name -->  so the guide stays the single source.
 import fs from 'node:fs';
 
@@ -57,15 +57,15 @@ export function help(topic, commandsText) {
   try {
     topics = loadTopics();
   } catch {
-    ui.warn('docs/DEVELOPER_GUIDE.md not found. Run abhi sync to get it.');
+    ui.warn('docs/SETUP_AND_WORKFLOW.md not found. Run dev sync to get it.');
   }
   if (!topic) {
     ui.log(commandsText);
     if (topics.length) {
       ui.section('Manual (step-by-step, also for doing things by hand)');
-      ui.table(topics.map((t) => [c.accent(`abhi help ${t.name}`), c.gray(t.title)]));
+      ui.table(topics.map((t) => [c.accent(`dev help ${t.name}`), c.gray(t.title)]));
       ui.blank();
-      ui.hint('The same manual is in docs/DEVELOPER_GUIDE.md (nicer to read on GitHub).');
+      ui.hint('The same manual is in docs/SETUP_AND_WORKFLOW.md (nicer to read on GitHub).');
     }
     return;
   }

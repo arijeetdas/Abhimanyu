@@ -18,12 +18,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Added
-- `abhi` team toolkit (`abhi.cmd` / `abhi` + `scripts/abhi/`): one-command setup, start/sync/finish workflow, guided conflict resolution, safety snapshots, undo/rescue, doctor, and `abhi help` manual.
+- `dev` team toolkit (`dev.cmd` / `dev` + `scripts/dev/`): one-command setup, start/sync/finish workflow, guided conflict resolution, safety snapshots, undo/rescue, doctor, and `dev help` manual.
 - Expo universal app in `frontend/` (website + Android + iOS) with Abhimanyu design tokens, Overview and Search screens, and a live backend health check.
 - FastAPI service skeleton in `backend/` (Python 3.12, uv): `GET /health`, `GET /api/v1/meta`, settings from `.env`, tests and ruff.
 - CI workflow (app type-check, lint, web build; backend lint and tests; toolkit smoke test) and a pull request template.
 - Pre-commit hook that blocks API keys, passwords and files over 50 MB.
-- `docs/ENGINEERING_PLAN.md` and `docs/DEVELOPER_GUIDE.md`.
+- `docs/ENGINEERING_PLAN.md` and `docs/SETUP_AND_WORKFLOW.md` (every step for setup, running the scripts, and Git/GitHub on this project; also shown by `dev help`).
 - Ingestion pipeline for BSE/NSE announcements, annual reports, and shareholding patterns.
 - Filing parser with OCR fallback for scanned documents.
 - Promoter and director relationship graph builder.
@@ -31,10 +31,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Investor alerts via in-app and email channels.
 
 ### Changed
-- Frontend stack: one Expo (React Native) codebase replaces the separate Next.js 14 web portal and Flutter app (see `ENGINEERING_PLAN.md`).
+- Frontend stack: one Expo (React Native, TypeScript) codebase for the web dashboard and the Android/iOS app (see `ENGINEERING_PLAN.md`). Flutter/Dart are not used in this project; all docs updated accordingly.
+- Team toolkit command renamed from `abhi` to `dev` (`dev.cmd`, `dev`, `scripts/dev/`); local state moves from `.abhi/` to `.dev/` automatically. `docs/DEVELOPER_GUIDE.md` merged into `docs/SETUP_AND_WORKFLOW.md`.
 
 ### Fixed
-- _Nothing yet._
+- Toolkit: Windows short (8.3) folder paths made a valid clone look unlinked, which could reset the branch during a sync; paths are now compared after full expansion, and an existing `.git` is never re-initialised.
+- Backend: empty values in `backend/.env` no longer break settings loading.
 
 ### Security
 - _Nothing yet._

@@ -54,7 +54,7 @@ export async function install(key) {
   const available = t.bin ? !!which(t.bin) : res.ok || /already installed/i.test(res.output);
   if (!available) {
     if (/already installed/i.test(res?.output || '')) {
-      ui.info(`${t.name} is installed but this terminal cannot see it yet. Close this window, open a new terminal, and run abhi again.`);
+      ui.info(`${t.name} is installed but this terminal cannot see it yet. Close this window, open a new terminal, and run dev again.`);
     } else manualInstall(key);
   }
   return available;

@@ -7,7 +7,7 @@
 **Framework:** FastAPI (OpenAPI docs auto-served at `/docs` and `/openapi.json`)
 **Last updated:** 2026-11-24
 
-> The API serves the Flutter mobile app and the Next.js analyst portal. Long-running forensic analysis is **asynchronous**: the client submits a job, receives a `job_id`, and then polls, subscribes via WebSocket, or waits for a push notification. See `ARCHITECTTURE.md` section 7.
+> The API serves the Abhimanyu Expo app on both platforms: the Android/iOS app and the web analyst portal. Long-running forensic analysis is **asynchronous**: the client submits a job, receives a `job_id`, and then polls, subscribes via WebSocket, or waits for a push notification. See `ARCHITECTTURE.md` section 7.
 
 ---
 

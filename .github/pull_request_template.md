@@ -4,9 +4,9 @@
 
 ## How did you test it?
 
-- [ ] Website (`abhi run web`)
-- [ ] Phone / emulator (`abhi run phone`)
-- [ ] Backend (`abhi run backend`, `uv run pytest`)
+- [ ] Website (`dev run web`)
+- [ ] Phone / emulator (`dev run phone`)
+- [ ] Backend (`dev run backend`, `uv run pytest`)
 
 ## Checklist
 

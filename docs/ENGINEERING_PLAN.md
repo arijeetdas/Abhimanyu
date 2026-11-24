@@ -1,46 +1,46 @@
 # Engineering Plan: Abhimanyu
 
 > Status: adopted 2026-11-24. This plan turns the design docs into a runnable codebase and a team workflow.
-> Where it differs from earlier docs (Next.js + Flutter), **this plan wins**; see section 2 for the mapping.
 
 ## 1. Decision: one React Native codebase for web, Android and iOS
 
 The team wants a website first and an app later, with the least rework. We use **Expo (React Native) with
 Expo Router and TypeScript** in `frontend/`: one codebase that builds the website and the Android/iOS apps.
 
-| Option | Website | App later | Codebases | Verdict |
-|---|---|---|---|---|
-| Next.js web + Flutter app (original docs) | excellent | rewrite in Dart | 2 languages | most work |
-| Next.js web + React Native app (monorepo) | excellent | share logic only, rewrite UI | 2 apps | medium |
-| **Expo universal app (chosen)** | good (static export) | **same code, already done** | 1 | least work |
+> **Rule:** the whole frontend is TypeScript + React Native (Expo). Flutter and Dart are **not used** in this
+> project, now or later. Do not add a second web or mobile framework; extend `frontend/` instead.
 
 Why Expo:
 
 - **Web now, app for free.** `expo export --platform web` builds the website. The same screens run on Android/iOS.
   Turning the website into an app is a build step (`eas build`), not a project.
-- **File-based routing like Next.js.** Every file in `frontend/src/app/` is a page/screen (Expo Router).
+- **File-based routing.** Every file in `frontend/src/app/` is a page/screen (Expo Router).
 - **No Android Studio needed day to day.** Teammates test on their own phone with the Expo Go app (QR code).
 - **Web-only libraries still work.** Cytoscape.js (relationship graph) and PDF.js (evidence inspector) need a browser DOM.
   Expo **DOM components** (`'use dom'`) render such components on web natively and inside a web view on mobile,
   so the analyst graph and PDF viewer are written once. Platform-specific files (`graph.web.tsx` / `graph.tsx`)
   are the fallback.
+- **One language for the frontend.** Everyone who touches the UI works in TypeScript/React.
 - **Free, student-friendly.** EAS Build free tier for APKs; the website deploys as static files anywhere.
 
 Trade-offs we accept: no server-side rendering/SEO (not needed for an analyst dashboard behind login), and web
 layout needs some care for wide screens (we already cap content width and use responsive grids).
 
-## 2. Mapping from the original stack
+## 2. Frontend stack
 
-| Original doc says | We use | Notes |
+| Concern | Technology | Notes |
 |---|---|---|
-| Next.js 14 web portal | Expo Router (web output) | same routes on web and mobile |
-| Flutter mobile app | the same Expo app | Android + iOS builds via EAS |
-| Tailwind CSS | design tokens in `frontend/src/constants/theme.ts` + `StyleSheet` | NativeWind can be added later if the team wants class names |
-| BLoC state management | TanStack Query (server data) + Zustand (UI state) | add when the first real API call lands |
-| Hive offline cache | TanStack Query persistence + MMKV / AsyncStorage | offline report reading |
-| Firebase Cloud Messaging | `expo-notifications` (uses FCM/APNs underneath) | |
-| Cytoscape.js / Vis.js | Cytoscape.js inside a DOM component | one implementation for web + mobile |
-| PDF.js | PDF.js inside a DOM component | page + bounding-box highlights |
+| Framework | Expo SDK + React Native + React Native Web, TypeScript | one app in `frontend/` |
+| Routing | Expo Router | same routes on web and mobile |
+| Builds | `expo export` (website), EAS Build (Android/iOS) | APK for demos |
+| Styling | design tokens in `frontend/src/constants/theme.ts` + `StyleSheet` | NativeWind can be added later if the team wants class names |
+| Server data | TanStack Query | add when the first real API call lands |
+| UI state | Zustand | small, explicit stores |
+| Offline cache | TanStack Query persistence + MMKV / AsyncStorage | offline report reading |
+| Push alerts | `expo-notifications` (FCM on Android, APNs on iOS) | |
+| Relationship graph | Cytoscape.js inside a DOM component | one implementation for web + mobile |
+| PDF evidence viewer | PDF.js inside a DOM component | page + bounding-box highlights |
+| Secure storage | `expo-secure-store` | auth tokens on mobile |
 
 Backend, AI, data and ML choices stay exactly as in [Tech_Stack.md](Tech_Stack.md): FastAPI, LangGraph, Gemini,
 PostgreSQL (Supabase), Neo4j, ChromaDB, Celery + Redis.
@@ -49,8 +49,8 @@ PostgreSQL (Supabase), Neo4j, ChromaDB, Celery + Redis.
 
 ```text
 Abhimanyu/
-├── abhi, abhi.cmd          # team toolkit launchers (setup, sync, finish, rescue, help)
-├── scripts/abhi/           # toolkit source (Node.js, zero dependencies)
+├── dev, dev.cmd          # team toolkit launchers (setup, sync, finish, rescue, help)
+├── scripts/dev/           # toolkit source (Node.js, zero dependencies)
 ├── frontend/               # Expo app: website + Android + iOS
 │   └── src/
 │       ├── app/            # routes / screens (Expo Router)
@@ -61,7 +61,7 @@ Abhimanyu/
 ├── backend/                # FastAPI service (Python 3.12, uv)
 │   ├── app/                # main.py, config.py, api/ routers
 │   └── tests/
-├── docs/                   # design docs + this plan + DEVELOPER_GUIDE.md
+├── docs/                   # design docs + this plan + SETUP_AND_WORKFLOW.md
 ├── .github/workflows/      # CI: app type-check, lint, web build; backend lint + tests
 └── .githooks/              # pre-commit safety hook (secrets, huge files)
 ```
@@ -75,21 +75,21 @@ Planned as each workstream starts (per ARCHITECTURE.md): `backend/app/agents/`, 
 
 | Moment | Command | Under the hood |
 |---|---|---|
-| Start of a session | `abhi start` | fetch, rebase onto the team's work (autostash), reinstall packages if lock files changed, add new `.env` keys, run web/phone/backend |
-| End of a session | `abhi finish` | show changes, block secrets & >50 MB files, type-check/lint changed code, guided commit message, changelog entry, sync, push with retry |
-| Something is off | `abhi rescue` / `abhi undo` | resume or abort half-done operations, rescue branch for help, restore snapshots |
+| Start of a session | `dev start` | fetch, rebase onto the team's work (autostash), reinstall packages if lock files changed, add new `.env` keys, run web/phone/backend |
+| End of a session | `dev finish` | show changes, block secrets & >50 MB files, type-check/lint changed code, guided commit message, changelog entry, sync, push with retry |
+| Something is off | `dev rescue` / `dev undo` | resume or abort half-done operations, rescue branch for help, restore snapshots |
 
-Full manual: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) or `abhi help`.
+Full manual: [SETUP_AND_WORKFLOW.md](SETUP_AND_WORKFLOW.md) or `dev help`.
 
 ### 4.2 Safety model
 
 1. **Snapshots before every risky step.** A hidden commit of the whole folder (including new, unsaved files) is
-   stored under `refs/abhi/snapshots/` before sync, commit, branch switch, discard and reset. Restorable via
-   `abhi undo`. They never appear in branches and are never pushed.
+   stored under `refs/dev/snapshots/` before sync, commit, branch switch, discard and reset. Restorable via
+   `dev undo`. They never appear in branches and are never pushed.
 2. **History is never rewritten on GitHub.** No force pushes. Undoing a pushed commit creates a revert.
 3. **Rebase-on-pull** keeps `main` linear and readable; conflicts get a guided resolver with a "cancel and go
    back" option that always works.
-4. **Secrets and huge files cannot leave the PC**: `abhi finish` and a Git pre-commit hook (which also guards
+4. **Secrets and huge files cannot leave the PC**: `dev finish` and a Git pre-commit hook (which also guards
    commits made from VS Code) block common key formats (Gemini, Groq, Anthropic, OpenAI, GitHub, AWS, private
    keys, DB URLs with passwords) and files over 50 MB.
 5. **CI on every push and pull request** runs type-check, lint, web build, backend lint and tests.
@@ -97,15 +97,15 @@ Full manual: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) or `abhi help`.
 
 ### 4.3 Branching
 
-Trunk-based: small changes go straight to `main` through `abhi finish`. Multi-day features use
-`abhi branch` -> `feature/<name>-<topic>` + pull request. Optionally protect `main` on GitHub with
+Trunk-based: small changes go straight to `main` through `dev finish`. Multi-day features use
+`dev branch` -> `feature/<name>-<topic>` + pull request. Optionally protect `main` on GitHub with
 "require status checks" once CI is green.
 
 ## 5. Week 1 checklist (DEVELOPMENT_ROADMAP.md, adjusted)
 
 Everyone:
 
-- [ ] Accept the GitHub invite, run `abhi setup`, install Expo Go, run `abhi start` -> "Backend + website".
+- [ ] Accept the GitHub invite, run `dev setup`, install Expo Go, run `dev start` -> "Backend + website".
 - [ ] The Overview screen shows **Backend API: Online**. That proves app <-> API wiring on your machine.
 
 | Member | First tasks |
@@ -134,7 +134,7 @@ Exit criteria: everyone can run app + API locally, the first `feat` commits from
 
 | Risk | Mitigation |
 |---|---|
-| College Wi-Fi blocks phone <-> PC | `abhi run tunnel`, mobile hotspot |
+| College Wi-Fi blocks phone <-> PC | `dev run tunnel`, mobile hotspot |
 | Expo SDK upgrades break APIs | stay on one SDK per semester; upgrade together with `npx expo install --fix` |
 | A library has no native support | DOM component or `.web.tsx` / `.tsx` split |
 | Merge conflicts in shared files | sync every session, small commits, guided resolver, branch for big features |

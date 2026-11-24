@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Abhimanyu team toolkit. Entry point for `abhi` (Windows: abhi.cmd, macOS/Linux: ./abhi).
+// Abhimanyu team toolkit. Entry point for `dev` (Windows: dev.cmd, macOS/Linux: ./dev).
 // Zero dependencies on purpose: it must run before `npm install` has ever happened.
 
 const [major] = process.versions.node.split('.').map(Number);
 if (major < 18) {
-  console.error(`\n  abhi needs Node.js 20 or newer (you have ${process.versions.node}).`);
+  console.error(`\n  dev needs Node.js 20 or newer (you have ${process.versions.node}).`);
   console.error('  Install the LTS from https://nodejs.org and open a new terminal.\n');
   process.exit(1);
 }
@@ -46,7 +46,7 @@ ui.flags.yes = !!opts.yes;
 ui.flags.plain = !!opts.plain;
 const cmd = ALIASES[opts._[0]] || opts._[0];
 const arg = opts._[1];
-const L = process.platform === 'win32' ? '.\\abhi' : './abhi';
+const L = process.platform === 'win32' ? '.\\dev' : './dev';
 
 const COMMANDS = () => {
   const { c } = ui;
@@ -168,7 +168,7 @@ async function dispatch(name) {
       return;
     }
     case 'version':
-      return ui.log(`abhi ${VERSION} (node ${process.versions.node})`);
+      return ui.log(`dev ${VERSION} (node ${process.versions.node})`);
     default:
       ui.fail(`Unknown command "${name}".`);
       ui.log(COMMANDS());
@@ -186,7 +186,7 @@ try {
   const { logFile, logLine } = await import('./sh.mjs');
   logLine(`ERROR ${e.stack || e}`);
   ui.blank();
-  explain(String(e.message || e), { fallbackTitle: 'abhi hit an unexpected error' });
+  explain(String(e.message || e), { fallbackTitle: 'dev hit an unexpected error' });
   ui.hint(`Details were written to ${logFile()}`);
   ui.hint('Your files were not harmed: risky steps always take a backup snapshot first.');
   process.exitCode = 1;

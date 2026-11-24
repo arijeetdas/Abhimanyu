@@ -143,8 +143,8 @@ The initial product scope follows the supplied proposal:
 -   Sentiment-versus-reality analysis between MD&A tone and auditor
     notes.
 -   Unified forensic risk reporting.
--   Next.js web dashboard.
--   Flutter mobile application.
+-   Web dashboard and Android/iOS mobile application, built from one
+    Expo (React Native) codebase.
 -   Mobile offline report caching.
 -   Firebase Cloud Messaging push notifications.
 -   Asynchronous processing for long-running investigations.
@@ -326,10 +326,10 @@ relationships. - Provide PDF viewing for annual reports. - Allow an
 extracted finding to navigate to its relevant PDF passage where page and
 coordinate information is available.
 
-**Proposed technologies** - Next.js 14 App Router. - Tailwind CSS. -
-Cytoscape.js or Vis.js. - PDF.js.
+**Technologies** - Expo Router (web output of the shared Expo app). -
+Shared design tokens. - Cytoscape.js (Expo DOM component). - PDF.js.
 
-### 6.10 Flutter Mobile Application
+### 6.10 Mobile Application (Android / iOS)
 
 **Description:** Provide a mobile monitoring experience for quick
 lookups, reports, and alerts.
@@ -338,10 +338,12 @@ lookups, reports, and alerts.
 company risk summaries and high-priority flags. - Display available
 investigation reports. - Cache previously retrieved reports locally for
 offline access. - Receive relevant push notifications. - Keep UI state
-and business logic separated through BLoC.
+and business logic separated (TanStack Query for server data, small
+Zustand stores for UI state).
 
-**Proposed technologies** - Flutter. - BLoC. - Hive. - Firebase Cloud
-Messaging.
+**Technologies** - Expo (React Native, same codebase as the web
+dashboard). - TanStack Query. - Persisted cache (MMKV / AsyncStorage). -
+expo-notifications (Firebase Cloud Messaging / APNs).
 
 ## 7. End-to-End User Workflow
 
@@ -427,8 +429,8 @@ cache.
   ChromaDB                            Semantic embeddings and retrieval
                                       of annual-report passages
 
-  Hive                                Local mobile cache for previously
-                                      retrieved reports
+  Persisted app cache                 Local mobile cache for previously
+  (MMKV / AsyncStorage)               retrieved reports
   -----------------------------------------------------------------------
 
 The proposal selects Hugging Face `all-MiniLM-L6-v2` for local text
@@ -586,7 +588,7 @@ attempting every proposed data source and real-time capability.
     verified sample records.
 8.  Use LangGraph to aggregate available specialist outputs.
 9.  Generate an evidence-backed forensic report.
-10. Display the report in a basic Next.js dashboard.
+10. Display the report in a basic web dashboard (Expo app, web build).
 
 ### Later phases
 
@@ -596,8 +598,8 @@ attempting every proposed data source and real-time capability.
     established.
 -   More advanced interactive graph exploration.
 -   PDF split-screen inspection with source highlighting.
--   Flutter mobile application.
--   Hive offline cache and FCM push alerts.
+-   Mobile release of the Expo app (Android APK / iOS).
+-   Offline report cache and FCM push alerts.
 -   Expanded data-provider integrations and production deployment.
 
 This MVP sequence is a recommended delivery plan based on the proposal's
@@ -611,8 +613,8 @@ The proposal defines the following four-member allocation.
   -----------------------------------------------------------------------
   Team member             Responsibility          Deliverables
   ----------------------- ----------------------- -----------------------
-  Member 1 --- Frontend   Flutter application and BLoC state, mobile
-  Lead                    Next.js dashboard       alerts, graph viewer,
+  Member 1 --- Frontend   Expo app (web + Android App state, mobile
+  Lead                    / iOS)                  alerts, graph viewer,
                                                   PDF split reader
 
   Member 2 --- Data       BSE/NSE XBRL and MCA-21 Scrapers, DIN
@@ -748,7 +750,8 @@ the Indian Stock Market* (7 pages).
 
 The proposal supplies the project problem, four target investigation
 areas, multi-agent architecture, specialist roles, data/API strategy,
-Flutter and Next.js application architecture, backend infrastructure,
+web/mobile application architecture (now one Expo app), backend
+infrastructure,
 and four-member task allocation. Product acceptance criteria, MVP
 sequencing, and several operational requirements in this PRD are
 implementation recommendations derived from that proposal and are

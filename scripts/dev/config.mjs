@@ -1,4 +1,4 @@
-// Shared constants and the small local state file (.abhi/state.json, never committed).
+// Shared constants and the small local state file (.dev/state.json, never committed).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,13 +21,23 @@ export const MIN = { git: '2.30.0', node: '20.19.4', python: '3.12' };
 export const PATHS = {
   frontend: path.join(ROOT, 'frontend'),
   backend: path.join(ROOT, 'backend'),
-  guide: path.join(ROOT, 'docs', 'DEVELOPER_GUIDE.md'),
+  guide: path.join(ROOT, 'docs', 'SETUP_AND_WORKFLOW.md'),
   changelog: path.join(ROOT, 'docs', 'CHANGELOG.md'),
-  state: path.join(ROOT, '.abhi'),
-  logs: path.join(ROOT, '.abhi', 'logs'),
+  state: path.join(ROOT, '.dev'),
+  logs: path.join(ROOT, '.dev', 'logs'),
 };
 
 const STATE_FILE = path.join(PATHS.state, 'state.json');
+
+// The toolkit was called "abhi" before; carry over its local state folder once.
+const LEGACY_STATE = path.join(ROOT, '.abhi');
+if (fs.existsSync(LEGACY_STATE) && !fs.existsSync(PATHS.state)) {
+  try {
+    fs.renameSync(LEGACY_STATE, PATHS.state);
+  } catch {
+    /* folder in use; it is simply recreated */
+  }
+}
 
 export function loadState() {
   try {

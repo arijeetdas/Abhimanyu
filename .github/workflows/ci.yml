@@ -48,7 +48,7 @@ jobs:
         run: uv run pytest -q
 
   toolkit:
-    name: abhi toolkit
+    name: dev toolkit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -56,6 +56,6 @@ jobs:
         with:
           node-version: 22
       - name: Syntax check
-        run: for f in scripts/abhi/*.mjs; do node --check "$f"; done
+        run: for f in scripts/dev/*.mjs; do node --check "$f"; done
       - name: Smoke test
-        run: node scripts/abhi/index.mjs --version && node scripts/abhi/index.mjs help --plain > /dev/null
+        run: node scripts/dev/index.mjs --version && node scripts/dev/index.mjs help --plain > /dev/null

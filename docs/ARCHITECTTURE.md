@@ -32,11 +32,11 @@
 
 ```
                       ┌─────────────────────────────────────────────┐
-  Retail Investor ───►│  Flutter Mobile App (iOS / Android)         │
+  Retail Investor ───►│  Abhimanyu App: Android / iOS (Expo)        │
                       └───────────────┬─────────────────────────────┘
                                       │ HTTPS / FCM push
   Analyst ───────────►┌───────────────▼─────────────────────────────┐
-                      │  Next.js 14 Web Dashboard                   │
+                      │  Abhimanyu Web Portal (same Expo codebase)  │
                       └───────────────┬─────────────────────────────┘
                                       │ REST / WebSocket
                       ┌───────────────▼─────────────────────────────┐
@@ -65,7 +65,7 @@ External services used: Firebase Cloud Messaging (push), Gemini / Groq (LLM APIs
 
 | Layer | Responsibility | Main technologies |
 |---|---|---|
-| 1. Presentation | Mobile alerts, quick ticker lookup, analyst deep-dive | Flutter (BLoC, Hive, FCM), Next.js 14 + Tailwind, Cytoscape.js / Vis.js, PDF.js |
+| 1. Presentation | Mobile alerts, quick ticker lookup, analyst deep-dive | Expo (React Native + React Native Web, TypeScript, Expo Router), TanStack Query, expo-notifications (FCM/APNs), Cytoscape.js, PDF.js |
 | 2. API | Auth, request validation, job dispatch, report retrieval | FastAPI + Uvicorn |
 | 3. Orchestration | Run the multi-agent investigation and combine signals | LangGraph + LangChain |
 | 4. Agents | Specialized analysis (text, ML, accounting, graph) | LlamaIndex, Gemini Flash, XGBoost, Isolation Forest, Neo4j |
@@ -238,20 +238,22 @@ API contracts are defined in `API_SPECIFICATION.md`.
 
 ## 9. Frontend Architecture
 
-### 9.1 Flutter mobile app (retail investors)
-- **State management:** BLoC pattern; blocs react to network events and push updates to the UI, keeping rendering separate from logic.
-- **Offline storage:** Hive caches risk reports and watchlists for review without network.
-- **Push alerts:** Firebase Cloud Messaging for pre-market spoofing flags and late-night auditor resignation filings.
+One **Expo (React Native) codebase** in `frontend/` builds both the Android/iOS app and the web portal (see `ENGINEERING_PLAN.md`). Screens adapt to the platform: phones get the quick-lookup layout, wide screens get the analyst layout.
+
+### 9.1 Mobile app (retail investors)
+- **State management:** TanStack Query for server data (fetching, caching, background refresh) and small Zustand stores for UI state, keeping rendering separate from logic.
+- **Offline storage:** persisted query cache (MMKV / AsyncStorage) keeps risk reports and watchlists readable without network.
+- **Push alerts:** expo-notifications (Firebase Cloud Messaging on Android, APNs on iOS) for pre-market spoofing flags and late-night auditor resignation filings.
 - **Screens:** ticker search, Red Flag Score card, flag list with plain-language explanation, watchlist, alert history.
 
-### 9.2 Next.js 14 web portal (analysts)
-- **Stack:** App Router, Tailwind CSS.
-- **Interactive graph visualizer:** Cytoscape.js / Vis.js to drag nodes, inspect DIN links, and expand circular trade paths.
-- **PDF split-screen inspector:** PDF.js with bounding-box highlighting; clicking an alert scrolls the original annual report to the exact paragraph.
+### 9.2 Web portal (analysts)
+- **Stack:** Expo Router (file-based routes, static web export), design tokens from `UI_UX_GUIDELINES.md`.
+- **Interactive graph visualizer:** Cytoscape.js inside an Expo DOM component (works on web and mobile) to drag nodes, inspect DIN links, and expand circular trade paths.
+- **PDF split-screen inspector:** PDF.js (in a DOM component) with bounding-box highlighting; clicking an alert scrolls the original annual report to the exact paragraph.
 - **Other views:** score breakdown by agent, M-Score history, order book anomaly timeline, report export.
 
 ### 9.3 Division of responsibility
-Flutter handles lightweight alerts and quick lookups; the web portal handles multi-window PDF and graph investigation.
+The phone layout handles lightweight alerts and quick lookups; the wide-screen web layout handles multi-pane PDF and graph investigation. Both are the same app.
 
 ---
 
@@ -287,8 +289,8 @@ Flutter handles lightweight alerts and quick lookups; the web portal handles mul
 | PostgreSQL | Supabase free (500 MB) | Prune raw text, keep large files outside the DB |
 | Neo4j | AuraDB Free (200k nodes/relationships) or Memgraph in Docker | Prioritize listed companies and their direct neighbors to stay within limits |
 | ChromaDB | Local or server disk | Persist the collection directory |
-| Web portal | Vercel free tier | Next.js native hosting |
-| Mobile app | Android APK and iOS TestFlight/simulator | FCM free |
+| Web portal | EAS Hosting, Netlify or Vercel free tier | Static export from `npx expo export --platform web` |
+| Mobile app | Android APK via EAS Build; Expo Go for development | FCM free |
 | LLM APIs | Gemini 2.5 Flash free tier, Groq Llama-3 free API | Keep prompts compact; cache every response |
 
 **Environments:** `local` (Docker Compose for Postgres, Redis, Memgraph, Chroma), `staging` (free-tier cloud), `production-demo`.
@@ -347,7 +349,7 @@ Flutter handles lightweight alerts and quick lookups; the web portal handles mul
 
 | Member | Owns |
 |---|---|
-| 1. Frontend Lead | Flutter app (BLoC, Hive, FCM), Next.js portal (Cytoscape.js, PDF.js) |
+| 1. Frontend Lead | Expo app for web + Android/iOS (TanStack Query, expo-notifications, Cytoscape.js, PDF.js) |
 | 2. Data Pipelines | Playwright and BeautifulSoup scrapers, BSE/NSE XBRL feeds, MCA-21 DIN extraction, PostgreSQL loading |
 | 3. Agentic AI | LangGraph orchestrator, DocSynthesizer, Gemini prompt pipeline, vector retrieval |
 | 4. ML and Graph | Isolation Forest / XGBoost on order book ticks, Beneish M-Score, Neo4j schema and queries |
@@ -366,8 +368,8 @@ abhimanyu/
 │   ├── ingestion/           # scrapers, feed readers, OCR, parsers
 │   ├── workers/             # Celery tasks
 │   └── tests/
-├── web/                     # Next.js 14 portal
-├── mobile/                  # Flutter app
+├── frontend/                # Expo app: web portal + Android/iOS app
+├── scripts/dev/            # team toolkit (dev setup / start / finish)
 ├── infra/                   # docker-compose, deployment configs
 └── README.md
 ```

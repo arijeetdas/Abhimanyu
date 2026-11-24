@@ -19,7 +19,7 @@ const AREAS = [
   [/^frontend\//, 'App'],
   [/^backend\//, 'Backend'],
   [/^docs\//, 'Docs'],
-  [/^(scripts\/|abhi(\.cmd)?$|\.githooks\/)/, 'Toolkit'],
+  [/^(scripts\/|dev(\.cmd)?$|\.githooks\/)/, 'Toolkit'],
   [/^\.github\//, 'CI'],
 ];
 const areaOf = (p) => (AREAS.find(([re]) => re.test(p)) || [null, 'Project'])[1];
@@ -55,7 +55,7 @@ function showIncoming(range, n, label) {
   if (n > list.length) ui.log(c.gray(`     ... and ${n - list.length} more`));
 }
 
-const launcher = process.platform === 'win32' ? '.\\abhi' : './abhi';
+const launcher = process.platform === 'win32' ? '.\\dev' : './dev';
 
 // ─── Preflight ───────────────────────────────────────────────────────────────
 
@@ -111,8 +111,8 @@ function abortOp(mode, before) {
 
 function continueOp(mode) {
   const env = { GIT_EDITOR: 'true' };
-  if (mode === 'merge') return G.git(['commit', '--no-edit'], { env: { ...env, ABHI_SKIP_HOOK: '1' } });
-  return G.git(['-c', 'core.editor=true', mode, '--continue'], { env: { ...env, ABHI_SKIP_HOOK: '1' } });
+  if (mode === 'merge') return G.git(['commit', '--no-edit'], { env: { ...env, DEV_SKIP_HOOK: '1' } });
+  return G.git(['-c', 'core.editor=true', mode, '--continue'], { env: { ...env, DEV_SKIP_HOOK: '1' } });
 }
 
 /**
@@ -174,7 +174,7 @@ export async function resolveConflicts(mode, target, before) {
       { value: 'cancel', label: 'Cancel: go back to before this sync', hint: 'safe; try later or ask a teammate' },
       { value: 'rescue', label: 'Get help: upload my work for a teammate', hint: 'creates a rescue branch on GitHub' },
     ];
-    if (!ui.interactive() && !process.env.ABHI_ANSWERS) ui.info('No terminal to ask you in, so playing it safe. Run abhi sync in a terminal to resolve it step by step.');
+    if (!ui.interactive() && !process.env.DEV_ANSWERS) ui.info('No terminal to ask you in, so playing it safe. Run dev sync in a terminal to resolve it step by step.');
     const choice = await ui.select('How do you want to fix it?', options, { initial: ui.interactive() ? 0 : 4 });
 
     if (choice === 'edit') {
@@ -214,7 +214,7 @@ export async function resolveConflicts(mode, target, before) {
 /** Bring `target` into the current branch. Returns 'ok' | 'cancelled' | 'failed'. */
 async function integrate(target, kind) {
   const before = G.sha('HEAD');
-  const r = kind === 'merge' ? G.git(['merge', '--no-edit', '--autostash', target], { env: { ABHI_SKIP_HOOK: '1' } }) : G.git(['rebase', '--autostash', target]);
+  const r = kind === 'merge' ? G.git(['merge', '--no-edit', '--autostash', target], { env: { DEV_SKIP_HOOK: '1' } }) : G.git(['rebase', '--autostash', target]);
   const op = G.opInProgress();
   if (op === 'rebase' || op === 'merge') return (await resolveConflicts(op, target, before)) ? 'ok' : 'cancelled';
   if (G.conflictedFiles().length) {
@@ -247,7 +247,7 @@ async function pushWithRetry(b) {
       continue;
     }
     explain(r.output, { fallbackTitle: 'Upload to GitHub failed' });
-    ui.info('Your commits are safe on this PC. Fix the problem above, then run abhi sync.');
+    ui.info('Your commits are safe on this PC. Fix the problem above, then run dev sync.');
     return { ok: false };
   }
   return { ok: false };
@@ -260,7 +260,7 @@ export async function syncCore({ push = true } = {}) {
   const f = G.fetchOrigin();
   if (!f.ok) {
     if (matches(f.output, 'offline')) {
-      ui.warn('You are offline. Everything stays saved on this PC; run abhi sync when you are back online.');
+      ui.warn('You are offline. Everything stays saved on this PC; run dev sync when you are back online.');
       return { offline: true, changedFiles: [] };
     }
     explain(f.output, { fallbackTitle: 'Could not check GitHub' });
@@ -359,7 +359,7 @@ export async function runTarget(target) {
     backend: ['API docs: http://localhost:8000/docs   Health: http://localhost:8000/health'],
   }[target];
   ui.blank();
-  ui.box([...tips, '', `${c.bold('Ctrl+C')} stops it. abhi will then offer to upload your work.`], { title: TARGETS.find((t) => t.value === target).label });
+  ui.box([...tips, '', `${c.bold('Ctrl+C')} stops it. The dev script will then offer to upload your work.`], { title: TARGETS.find((t) => t.value === target).label });
   if (target === 'backend') return runLive('uv', API_ARGS, { cwd: PATHS.backend });
   const expo = { web: ['expo', 'start', '--web'], phone: ['expo', 'start'], tunnel: ['expo', 'start', '--tunnel'], android: ['expo', 'start', '--android'] }[target];
   return runLive('npx', expo, { cwd: PATHS.frontend });
@@ -512,7 +512,7 @@ function ignorePaths(paths) {
   const have = new Set(cur.split(/\r?\n/).map((l) => l.trim()));
   const add = paths.map((p) => '/' + p).filter((p) => !have.has(p));
   if (!add.length) return;
-  fs.writeFileSync(file, cur.replace(/\s*$/, '\n') + `\n# Added by abhi (secrets / large files)\n${add.join('\n')}\n`);
+  fs.writeFileSync(file, cur.replace(/\s*$/, '\n') + `\n# Added by dev (secrets / large files)\n${add.join('\n')}\n`);
   G.git(['add', '--', '.gitignore']);
   ui.ok(`Added to .gitignore: ${add.join(', ')}`);
 }
@@ -603,7 +603,7 @@ export async function finish(opts = {}) {
       const msg = opts.message || (await commitMessage(staged));
       await maybeChangelog(msg, staged);
       G.snapshot('before-commit');
-      const r = G.git(['commit', '-q', '-m', msg], { env: { ABHI_SKIP_HOOK: '1' } });
+      const r = G.git(['commit', '-q', '-m', msg], { env: { DEV_SKIP_HOOK: '1' } });
       if (!r.ok) {
         explain(r.output, { fallbackTitle: 'Commit failed' });
         return;
@@ -771,7 +771,7 @@ export async function undo() {
       if (!(await ui.confirm('Create the reversing commit and upload it?', false))) return;
       const isMerge = G.gitOut(['rev-list', '--parents', '-n1', 'HEAD']).split(' ').length > 2;
       G.snapshot('before-revert');
-      const r = G.git(['revert', '--no-edit', ...(isMerge ? ['-m', '1'] : []), 'HEAD'], { env: { ABHI_SKIP_HOOK: '1' } });
+      const r = G.git(['revert', '--no-edit', ...(isMerge ? ['-m', '1'] : []), 'HEAD'], { env: { DEV_SKIP_HOOK: '1' } });
       if (!r.ok && G.opInProgress() === 'revert') {
         if (!(await resolveConflicts('revert', null, G.sha('HEAD')))) return;
       } else if (!r.ok) return explain(r.output);
@@ -808,7 +808,7 @@ export async function undo() {
       G.snapshot('before-restore');
       const r = G.git(['restore', `--source=${pick}`, '--worktree', '--', '.']);
       if (!r.ok) return explain(r.output);
-      ui.ok('Files restored. Review them with abhi status, then abhi finish to upload.');
+      ui.ok('Files restored. Review them with dev status, then dev finish to upload.');
     } else if (how === 'branch') {
       const name = `restore/${G.userSlug()}-${pick.slice(0, 7)}`;
       G.git(['branch', '-f', name, pick]);
@@ -947,7 +947,7 @@ export async function rescue() {
       if (!f.ok) return explain(f.output);
       G.git(['switch', '-f', '-C', MAIN, `origin/${MAIN}`]);
       G.git(['clean', '-fdq']);
-      ui.ok(`Done. Your folder now matches GitHub. Old state: snapshot ${snap?.short} (abhi undo -> restore).`);
+      ui.ok(`Done. Your folder now matches GitHub. Old state: snapshot ${snap?.short} (dev undo -> restore).`);
     }
   }
 }

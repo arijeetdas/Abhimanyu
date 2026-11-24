@@ -1,5 +1,5 @@
 // Blocks the classic team accidents: committing API keys / passwords, and files too big for GitHub.
-// Used by "abhi finish" and by the Git pre-commit hook (so commits from VS Code are protected too).
+// Used by "dev finish" and by the Git pre-commit hook (so commits from VS Code are protected too).
 import { git } from './git.mjs';
 import * as ui from './ui.mjs';
 

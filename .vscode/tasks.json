@@ -1,9 +1,9 @@
 {
   "version": "2.0.0",
   "tasks": [
-    { "label": "abhi: Start working (sync + run)", "type": "shell", "command": "${workspaceFolder}/abhi start", "windows": { "command": "${workspaceFolder}\abhi.cmd start" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
-    { "label": "abhi: Finish & upload (commit + push)", "type": "shell", "command": "${workspaceFolder}/abhi finish", "windows": { "command": "${workspaceFolder}\abhi.cmd finish" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
-    { "label": "abhi: Sync with the team", "type": "shell", "command": "${workspaceFolder}/abhi sync", "windows": { "command": "${workspaceFolder}\abhi.cmd sync" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
-    { "label": "abhi: Menu", "type": "shell", "command": "${workspaceFolder}/abhi", "windows": { "command": "${workspaceFolder}\abhi.cmd" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } }
+    { "label": "dev: Start working (sync + run)", "type": "shell", "command": "${workspaceFolder}/dev start", "windows": { "command": "${workspaceFolder}\dev.cmd start" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
+    { "label": "dev: Finish & upload (commit + push)", "type": "shell", "command": "${workspaceFolder}/dev finish", "windows": { "command": "${workspaceFolder}\dev.cmd finish" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
+    { "label": "dev: Sync with the team", "type": "shell", "command": "${workspaceFolder}/dev sync", "windows": { "command": "${workspaceFolder}\dev.cmd sync" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } },
+    { "label": "dev: Menu", "type": "shell", "command": "${workspaceFolder}/dev", "windows": { "command": "${workspaceFolder}\dev.cmd" }, "problemMatcher": [], "presentation": { "panel": "dedicated", "focus": true } }
   ]
 }

@@ -5,7 +5,7 @@
 > Multi-Agent Forensic Tool for the Indian Stock Market\
 > **Document:** `docs/SECURITY.md`\
 > **Status:** Security requirements and implementation guidance\
-> **Scope:** Next.js web dashboard, Flutter mobile application, FastAPI
+> **Scope:** Expo app (web dashboard and Android/iOS app), FastAPI
 > backend, AI agents, data-ingestion pipelines, PostgreSQL, Neo4j,
 > ChromaDB, Redis/Celery workers, and external data/model providers.
 
@@ -32,7 +32,7 @@ indicators. The platform must therefore protect:
 
 The supplied project proposal specifies FastAPI, LangGraph/LangChain,
 Gemini and other possible model providers, PostgreSQL, Neo4j, ChromaDB,
-Redis/Celery, Flutter, Next.js, and external Indian financial-data
+Redis/Celery, the web and mobile frontend (one Expo app), and external Indian financial-data
 sources. This policy applies security controls across that complete
 architecture.
 
@@ -68,11 +68,11 @@ Abhimanyu should follow these security objectives:
   -----------------------------------------------------------------------
   Component                           Security responsibility
   ----------------------------------- -----------------------------------
-  Next.js web dashboard               Protect browser sessions, user
+  Expo app: web build                 Protect browser sessions, user
                                       actions, API communication, and
                                       displayed investigation data
 
-  Flutter mobile app                  Protect locally cached reports,
+  Expo app: Android/iOS              Protect locally cached reports,
                                       authentication tokens, and
                                       notification content
 
@@ -183,10 +183,10 @@ For bearer-token authentication:
 -   Do not store long-lived secrets in browser local storage if a safer
     session design is available.
 
-For Flutter:
+For the mobile app (Android/iOS):
 
--   Store authentication tokens in platform-protected secure storage,
-    not ordinary preferences or Hive.
+-   Store authentication tokens with `expo-secure-store` (Keychain /
+    Keystore), not AsyncStorage, MMKV or the query cache.
 -   Clear credentials on logout and account removal.
 -   Do not include sensitive report content in notification previews by
     default.
@@ -303,7 +303,8 @@ including:
     equivalent.
 -   A restrictive Permissions-Policy where applicable.
 
-CSP must be tested against the actual Next.js deployment and required
+CSP must be tested against the actual web deployment (static Expo web
+export on the chosen host) and required
 assets before enforcement.
 
 ## 6. Database Security
@@ -607,11 +608,11 @@ Requirements:
 
 ## 11. Frontend and Mobile Security
 
-### 11.1 Next.js web dashboard
+### 11.1 Web dashboard (Expo web build)
 
 -   Keep private API keys and server credentials on the server.
--   Never prefix a secret with a public environment-variable name that
-    exposes it to the browser.
+-   Never put a secret in an `EXPO_PUBLIC_*` environment variable: those
+    values are bundled into the website and the app.
 -   Render untrusted filing text safely; avoid unsafe HTML injection.
 -   Sanitize any content that must be rendered as HTML.
 -   Apply CSP and other suitable browser security headers.
@@ -622,11 +623,11 @@ Requirements:
     telemetry.
 -   Enforce report access on the backend for every request.
 
-### 11.2 Flutter mobile application
+### 11.2 Mobile application (Android / iOS)
 
--   Store tokens in platform-protected secure storage.
--   Do not store credentials in Hive.
--   Treat Hive as a cache, not an authoritative source of access
+-   Store tokens in platform-protected secure storage (`expo-secure-store`).
+-   Do not store credentials in AsyncStorage, MMKV or the query cache.
+-   Treat the local cache as a cache, not an authoritative source of access
     permissions.
 -   Clear user-specific cached information on logout or account removal.
 -   Consider encryption for locally cached sensitive reports.
@@ -766,7 +767,7 @@ supersession information when analyses are rerun.
 
 ## 15. Dependency and Software Supply-Chain Security
 
--   Use maintained versions of Python, Node.js, Flutter, and their
+-   Use maintained versions of Python, Node.js, the Expo SDK, and their
     dependencies.
 -   Pin or lock dependency versions for reproducible builds.
 -   Review dependency updates before merging.
@@ -1013,7 +1014,7 @@ security requirements.
 
 The proposal explicitly identifies the application stack and data flows,
 including FastAPI, LangGraph/LangChain, LLM providers, PostgreSQL,
-Neo4j, ChromaDB, Redis/Celery, Next.js, Flutter, Firebase Cloud
+Neo4j, ChromaDB, Redis/Celery, the web and mobile frontend, Firebase Cloud
 Messaging, and external Indian financial-data sources.
 
 Authentication, authorization roles, encryption details, retention

@@ -1,6 +1,6 @@
 """FastAPI entry point.
 
-Run locally from the repo root:  ./abhi run backend
+Run locally from the repo root:  ./dev run backend
 Or manually from backend/:       uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 """
 

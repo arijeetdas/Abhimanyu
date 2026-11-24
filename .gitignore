@@ -9,7 +9,8 @@ firebase-adminsdk*.json
 google-services.json
 GoogleService-Info.plist
 
-# ── abhi toolkit local state (snapshots live inside .git, logs here) ──
+# ── dev toolkit local state (snapshots live inside .git, logs here) ──
+.dev/
 .abhi/
 
 # ── Node / Expo (frontend) ──

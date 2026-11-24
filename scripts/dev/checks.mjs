@@ -1,4 +1,4 @@
-// Health checks ("abhi doctor") and the fixers shared with "abhi setup" and "abhi start".
+// Health checks ("dev doctor") and the fixers shared with "dev setup" and "dev start".
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -85,6 +85,12 @@ export async function setIdentity() {
 
 /** Connect a plain folder (e.g. downloaded ZIP) or a wrongly-wired clone to the team repo. */
 export async function connectRepo() {
+  if (!G.isRepo() && G.hasOwnGitDir()) {
+    // A repo exists here but Git did not report it as this folder: never re-initialise or reset it.
+    ui.warn('This folder has a Git repository, but Git could not confirm it (permissions, or a moved/copied folder).');
+    ui.hint(`Try:  git config --global --add safe.directory "${ROOT.replace(/\\/g, '/')}"   then run dev doctor.`);
+    return false;
+  }
   if (!G.isRepo()) {
     ui.info(`This folder is not linked to GitHub yet. Linking it to ${REPO.web}`);
     ui.hint('Your existing files are kept; Git will just compare them with the team version.');
@@ -100,7 +106,7 @@ export async function connectRepo() {
     G.git(['branch', '-q', `--set-upstream-to=origin/${MAIN}`, MAIN]);
     ui.ok('Folder linked to GitHub');
     const changed = G.status().length;
-    if (changed) ui.info(`${changed} file(s) here differ from the team version. Review them with "abhi status".`);
+    if (changed) ui.info(`${changed} file(s) here differ from the team version. Review them with "dev status".`);
     return true;
   }
   const url = G.remoteUrl();
@@ -166,7 +172,7 @@ export function syncEnvFile(dir, target = '.env') {
   const missing = [...envKeys(exampleText)].filter((k) => !have.has(k));
   if (!missing.length) return;
   const lines = exampleText.split(/\r?\n/).filter((l) => missing.some((k) => l.startsWith(k + '=')));
-  fs.appendFileSync(envFile, `\n# Added by abhi from .env.example on ${new Date().toISOString().slice(0, 10)}\n${lines.join('\n')}\n`);
+  fs.appendFileSync(envFile, `\n# Added by dev from .env.example on ${new Date().toISOString().slice(0, 10)}\n${lines.join('\n')}\n`);
   ui.info(`New settings added to ${rel}: ${missing.join(', ')} ${ui.c.gray('(fill them in if you need them)')}`);
 }
 
@@ -212,20 +218,20 @@ export function collect({ deep = false } = {}) {
   });
   if (repo) {
     const op = G.opInProgress();
-    if (op) add('Project', 'Unfinished operation', 'warn', `a ${op} is half-done`, { manual: 'Run: abhi rescue' });
+    if (op) add('Project', 'Unfinished operation', 'warn', `a ${op} is half-done`, { manual: 'Run: dev rescue' });
     const b = G.branch();
-    add('Project', 'Branch', b ? 'ok' : 'warn', b || 'detached HEAD (not on a branch)', b ? {} : { manual: 'Run: abhi rescue' });
+    add('Project', 'Branch', b ? 'ok' : 'warn', b || 'detached HEAD (not on a branch)', b ? {} : { manual: 'Run: dev rescue' });
     const ls = G.git(['ls-remote', '--heads', 'origin', MAIN], { timeout: 25000, stdin: 'inherit' });
     add('Project', 'GitHub access', ls.ok ? 'ok' : 'fail', ls.ok ? 'can read the repo' : 'cannot reach the repo', { output: ls.ok ? '' : ls.output });
     if (deep && ls.ok) {
-      const p = G.git(['push', '--dry-run', '--porcelain', 'origin', `HEAD:refs/heads/abhi-access-check-${G.userSlug()}`], { timeout: 60000, stdin: 'inherit' });
+      const p = G.git(['push', '--dry-run', '--porcelain', 'origin', `HEAD:refs/heads/dev-access-check-${G.userSlug()}`], { timeout: 60000, stdin: 'inherit' });
       add('Project', 'Push permission', p.ok ? 'ok' : 'fail', p.ok ? 'you can push' : 'push was refused', { output: p.ok ? '' : p.output });
     }
     const missing = missingGitConfig();
     add('Project', 'Team Git settings', missing.length ? 'warn' : 'ok', missing.length ? `${missing.length} not applied (${missing.map((m) => m[0]).join(', ')})` : 'applied', {
       fix: { label: 'Apply team Git settings', run: async () => (applyGitConfig(), true) },
     });
-    add('Project', 'Safety snapshots', 'info', `${G.listSnapshots().length} saved (abhi undo -> restore)`);
+    add('Project', 'Safety snapshots', 'info', `${G.listSnapshots().length} saved (dev undo -> restore)`);
   }
 
   // App

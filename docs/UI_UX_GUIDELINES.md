@@ -3,14 +3,15 @@
 **Product:** Abhimanyu\
 **Proposal title:** BharatForensic AI --- Institutional-Grade
 Multi-Agent Forensic Tool for the Indian Stock Market\
-**Platforms:** Next.js web dashboard and Flutter mobile application\
+**Platforms:** One Expo (React Native) app: web dashboard + Android/iOS\
 **Status:** UI/UX specification for implementation
 
 > **Source alignment:** The supplied project proposal defines a dual
-> frontend: a detailed Next.js analyst portal with interactive corporate
-> graphs and PDF split-screen evidence inspection, plus a Flutter mobile
-> app for quick ticker lookups, high-priority flags, offline report
-> caching, and push alerts. This document preserves those priorities.
+> experience: a detailed web analyst portal with interactive corporate
+> graphs and PDF split-screen evidence inspection, plus a mobile
+> experience for quick ticker lookups, high-priority flags, offline report
+> caching, and push alerts. Both are built from the same Expo codebase in
+> `frontend/` (see `ENGINEERING_PLAN.md`). This document preserves those priorities.
 > Visual styling, component behavior, accessibility, and layout details
 > below are design recommendations to make those requirements
 > implementable.
@@ -473,7 +474,7 @@ On mobile, use compact report cards rather than a wide table.
 
 ## 4.11 Mobile Quick Lookup and Report
 
-Flutter mobile is designed for quick lookups and high-priority
+The mobile layout is designed for quick lookups and high-priority
 monitoring.
 
 Recommended report layout: 1. Company header. 2. Short findings summary.
@@ -487,8 +488,8 @@ relationship list if needed.
 
 ## 4.12 Offline Report Cache
 
-The proposal identifies Hive as the mobile cache for previously
-retrieved risk reports.
+The app keeps previously retrieved risk reports in a persisted local
+cache (TanStack Query persistence on MMKV / AsyncStorage).
 
 UX requirements: - Clearly identify cached/offline reports. - Show the
 report's last successful update. - Indicate that offline content may be
@@ -757,12 +758,14 @@ Only populate statuses from actual job/data state.
 
 ## 12. Design System and Frontend Implementation
 
+Web and mobile are one Expo (React Native + React Native Web) codebase
+with Expo Router and TypeScript. Tokens live in
+`frontend/src/constants/theme.ts`.
+
 ### 12.1 Web
 
-The proposal specifies Next.js 14 App Router and Tailwind CSS.
-
-Recommended implementation: - Centralized design tokens using CSS
-variables. - Reusable layout, card, badge, table, search, drawer, and
+Recommended implementation: - Centralized design tokens (`theme.ts`;
+CSS variables in `global.css` for web-only details). - Reusable layout, card, badge, table, search, drawer, and
 modal components. - Shared severity and status mappings. - Responsive
 design utilities. - Consistent spacing, typography, and radius scale. -
 Accessible components with keyboard support. - Keep domain logic and API
@@ -770,12 +773,10 @@ state out of purely presentational components.
 
 ### 12.2 Mobile
 
-The proposal specifies Flutter and BLoC.
-
-Recommended implementation: - Shared color, typography, spacing, and
-component tokens. - Reusable status badges and finding cards. - BLoC
-states for loading, success, partial success, failure, and offline
-cache. - Clearly separated network, cached, and stale report states. -
+Recommended implementation: - The same color, typography, spacing, and
+component tokens as web. - Reusable status badges and finding cards
+(shared components). - Explicit query states for loading, success,
+partial success, failure, and offline cache. - Clearly separated network, cached, and stale report states. -
 Consistent behavior between Android and iOS.
 
 ### 12.3 Shared product language
@@ -806,7 +807,7 @@ severity of findings.
 -   [ ] Settings / Account
 -   [ ] Empty, loading, partial, failed, and unavailable states
 
-### Flutter
+### Mobile (Android / iOS)
 
 -   [ ] Home / Monitoring
 -   [ ] Company Search
@@ -913,11 +914,12 @@ A UI release should be reviewed against the following:
 
 ### Explicitly defined by the project proposal
 
--   Flutter mobile app for quick lookups and high-priority alerts.
--   BLoC state management.
--   Hive caching of reports for offline access.
+-   Mobile app for quick lookups and high-priority alerts.
+-   Caching of reports for offline access.
 -   Firebase Cloud Messaging.
--   Next.js 14 App Router and Tailwind CSS web dashboard.
+-   Web dashboard for deep-dive analysis.
+-   Implementation choice (team decision): both delivered by one Expo
+    (React Native) app.
 -   Interactive relationship graph with Cytoscape.js or Vis.js.
 -   PDF.js split-screen inspector.
 -   Bounding-box evidence highlighting and navigation from finding to

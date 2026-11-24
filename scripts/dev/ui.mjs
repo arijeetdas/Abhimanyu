@@ -12,7 +12,7 @@ export const interactive = () => !flags.yes && !!process.stdin.isTTY && ttyOut;
 
 const colorOn = () =>
   !flags.plain && !('NO_COLOR' in env) && env.TERM !== 'dumb' && (ttyOut || !!env.FORCE_COLOR);
-const unicodeOn = () => !flags.plain && env.ABHI_ASCII !== '1' && env.TERM !== 'dumb';
+const unicodeOn = () => !flags.plain && env.DEV_ASCII !== '1' && env.TERM !== 'dumb';
 const truecolor =
   process.platform === 'win32' ||
   /truecolor|24bit/i.test(env.COLORTERM || '') ||
@@ -208,8 +208,8 @@ if (ttyOut) process.on('exit', () => out.write('\x1b[?25h'));
 
 // ─── Prompts ─────────────────────────────────────────────────────────────────
 
-// Automated tests can pre-answer prompts: ABHI_ANSWERS="mine|y|some text" (one entry per prompt, in order).
-const scripted = process.env.ABHI_ANSWERS ? process.env.ABHI_ANSWERS.split('|') : null;
+// Automated tests can pre-answer prompts: DEV_ANSWERS="mine|y|some text" (one entry per prompt, in order).
+const scripted = process.env.DEV_ANSWERS ? process.env.DEV_ANSWERS.split('|') : null;
 const nextScripted = () => (scripted && scripted.length ? scripted.shift() : undefined);
 const echo = (q, a) => log(` ${c.green(sym.ok)} ${c.bold(q)} ${c.gray(sym.arrow)} ${c.accent(a)} ${c.gray('(scripted)')}`);
 
@@ -228,7 +228,7 @@ export async function ask(question, { def = '', required = false, validate } = {
   }
   if (!interactive()) {
     if (def || !required) return def;
-    throw new Error(`"${question}" needs an answer. Run this in a terminal, or pass it as an option (see: abhi help).`);
+    throw new Error(`"${question}" needs an answer. Run this in a terminal, or pass it as an option (see: dev help).`);
   }
   const rl = readline.createInterface({ input: process.stdin, output: out });
   rl.on('SIGINT', () => {

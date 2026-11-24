@@ -51,7 +51,7 @@ export default function OverviewScreen() {
           <ThemedText type="small" themeColor="textMuted">
             {health.reason}. Start it with{' '}
             <ThemedText type="code" themeColor="text">
-              abhi run backend
+              dev run backend
             </ThemedText>
             {Platform.OS !== 'web' ? ' and keep your phone on the same Wi-Fi.' : '.'}
           </ThemedText>

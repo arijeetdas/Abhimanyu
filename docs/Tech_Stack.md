@@ -29,22 +29,20 @@ independently reviewed.
 
 ## 2. High-Level Technology Matrix
 
-> **Frontend update (2026-11-24):** the web dashboard and the mobile app are now **one Expo (React Native)
-> codebase** in `frontend/` instead of separate Next.js and Flutter projects. Rows below that mention Next.js,
-> Flutter, BLoC, Hive or Tailwind map to their Expo equivalents in section 3 and in
-> [ENGINEERING_PLAN.md](ENGINEERING_PLAN.md). Backend, AI, data and ML choices are unchanged.
+> **Frontend:** the web dashboard and the mobile app are **one Expo (React Native) codebase** in
+> `frontend/` (TypeScript, Expo Router). Details in section 3 and [ENGINEERING_PLAN.md](ENGINEERING_PLAN.md).
 
   -----------------------------------------------------------------------
   Layer                   Selected technology     Purpose
   ----------------------- ----------------------- -----------------------
-  Web dashboard           Next.js 14 (App         Institutional-style
-                          Router), Tailwind CSS   investigation portal
+  Web dashboard           Expo (React Native Web) Institutional-style
+                          + Expo Router           investigation portal
 
-  Mobile application      Flutter                 Cross-platform Android
-                                                  and iOS application
+  Mobile application      Expo (React Native),    Cross-platform Android
+                          same codebase as web    and iOS application
 
-  Mobile state management BLoC                    Reactive state and
-                                                  separation of UI from
+  Frontend state          TanStack Query +        Server data caching and
+  management              Zustand                 separation of UI from
                                                   business logic
 
   Backend API             Python, FastAPI,        REST API and service
@@ -110,7 +108,7 @@ independently reviewed.
   Push notifications      Firebase Cloud          Mobile risk alerts
                           Messaging (FCM)         
 
-  Mobile offline cache    Hive                    Local storage of
+  Mobile offline cache    Persisted query cache   Local storage of
                                                   previously fetched
                                                   reports
 
@@ -138,19 +136,19 @@ Rationale and trade-offs: [ENGINEERING_PLAN.md](ENGINEERING_PLAN.md) section 1.
   Framework               Expo SDK + React        Web via React Native
                           Native + TypeScript     Web, mobile via EAS
 
-  Routing                 Expo Router             File-based, like the
-                                                  Next.js App Router
+  Routing                 Expo Router             File-based routes in
+                                                  `frontend/src/app/`
 
   Styling                 Design tokens           UI_UX_GUIDELINES.md
                           (`theme.ts`) +          palette; NativeWind
                           StyleSheet              optional later
 
-  Server data             TanStack Query          Replaces BLoC for API
-                                                  state and caching
+  Server data             TanStack Query          API state, caching and
+                                                  background refresh
 
   Local UI state          Zustand                 Small, explicit stores
 
-  Offline cache           Query persistence +     Replaces Hive
+  Offline cache           Query persistence +     Offline report reading
                           MMKV / AsyncStorage     
 
   Push notifications      expo-notifications      FCM (Android) and APNs
@@ -414,7 +412,7 @@ inference using PyTorch, reducing dependence on paid embedding APIs.
   ChromaDB                            Semantic vectors and searchable
                                       document chunks
 
-  Hive                                Mobile-device offline cache
+  App cache (MMKV)                    Mobile-device offline cache
   -----------------------------------------------------------------------
 
 These stores serve different purposes and should not be treated as
@@ -444,7 +442,8 @@ updated status and the completed report.
 
 ### Firebase Cloud Messaging (FCM)
 
-FCM delivers push notifications to Flutter devices.
+FCM delivers push notifications to Android devices (APNs for iOS),
+received in the app through `expo-notifications`.
 
 Example alert events: - A newly ingested filing contains a potentially
 significant auditor observation. - A company's investigation risk
@@ -533,10 +532,10 @@ Abhimanyu/
   -----------------------------------------------------------------------
   Member                  Responsibility          Main technologies
   ----------------------- ----------------------- -----------------------
-  Member 1 --- Frontend   Flutter application,    Flutter, BLoC, Next.js,
-  Lead                    BLoC state, mobile      Tailwind CSS,
-                          alerts, Next.js         Cytoscape.js, PDF.js,
-                          dashboard, graph        FCM
+  Member 1 --- Frontend   Expo app (web +         Expo, React Native,
+  Lead                    Android/iOS), state,    TypeScript, TanStack
+                          mobile alerts, web      Query, Cytoscape.js,
+                          dashboard, graph        PDF.js, FCM
                           viewer, PDF reader      
 
   Member 2 --- Data       BSE/NSE XBRL ingestion, Python, Playwright,
@@ -606,7 +605,7 @@ secrets for hosted environments.
 A practical implementation order for the proposed stack:
 
 1.  **Foundation:** FastAPI, PostgreSQL, company/ticker records, and
-    basic Next.js dashboard.
+    basic web dashboard (Expo app).
 2.  **Data ingestion:** Start with a small, reproducible set of public
     filings and financial statements.
 3.  **Document intelligence:** PDF extraction, OCR, LlamaIndex, and
@@ -620,7 +619,7 @@ A practical implementation order for the proposed stack:
 7.  **Market microstructure:** Add order-book analysis only after a
     reliable and permitted data source is established.
 8.  **Frontend expansion:** Add interactive graph inspection, PDF
-    evidence navigation, Flutter reports, offline cache, and FCM alerts.
+    evidence navigation, mobile reports, offline cache, and FCM alerts.
 9.  **Evaluation and hardening:** Test data quality, false positives,
     model performance, access controls, and system reliability.
 

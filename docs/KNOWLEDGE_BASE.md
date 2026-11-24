@@ -493,16 +493,16 @@ The project proposal's student-oriented technology plan includes:
   Background processing               Celery + Redis, or Python asyncio
                                       task queue
 
-  Web frontend                        Next.js 14 App Router + Tailwind
-                                      CSS
+  Web + mobile frontend               One Expo (React Native) app with
+                                      Expo Router and TypeScript
 
-  Mobile frontend                     Flutter
+  Frontend state management           TanStack Query + Zustand
 
-  Mobile state management             BLoC
+  Mobile offline cache                Persisted query cache (MMKV /
+                                      AsyncStorage)
 
-  Mobile offline cache                Hive
-
-  Push notifications                  Firebase Cloud Messaging
+  Push notifications                  expo-notifications (Firebase Cloud
+                                      Messaging / APNs)
 
   PDF viewer                          PDF.js
 
@@ -525,22 +525,26 @@ should identify the selected option for each layer.
 
 ## 12. Frontend Product Knowledge
 
-### 12.1 Flutter mobile application
+Both surfaces below are the same Expo (React Native) codebase in
+`frontend/`; see `ENGINEERING_PLAN.md`.
+
+### 12.1 Mobile application (Android / iOS)
 
 The proposal defines the mobile app as an on-the-go monitoring station
 for high-priority market flags.
 
-Specified capabilities: - Cross-platform iOS and Android. - BLoC state
-management. - Reactive risk-score updates. - Hive local cache for
-company risk reports. - Firebase Cloud Messaging alerts. - Quick ticker
+Specified capabilities: - Cross-platform iOS and Android. - TanStack
+Query state management. - Reactive risk-score updates. - Persisted local
+cache for company risk reports. - Push alerts via expo-notifications (FCM). - Quick ticker
 lookup and review of previously cached analysis.
 
-### 12.2 Next.js web dashboard
+### 12.2 Web dashboard
 
 The proposal defines the web application as an institutional analyst
 portal for deep-dive forensic research.
 
-Specified capabilities: - Next.js 14 App Router. - Tailwind CSS. -
+Specified capabilities: - Expo Router (file-based routes, static web
+export). - Shared design tokens (`frontend/src/constants/theme.ts`). -
 Interactive corporate graph using Cytoscape.js or Vis.js. - Dragging
 nodes, inspecting DIN links, and expanding circular trade paths. -
 PDF.js split-screen inspector. - Bounding-box coordinate highlighting. -
@@ -731,7 +735,7 @@ Forensic Tool for the Indian Stock Market*
 
 Main source sections: 1. Project Idea. 2. Core Innovation &
 Architecture. 3. Specialized Agent Roles. 4. Complete Data & API
-Strategy. 5. App-Side Architecture (Flutter & Web). 6. Backend
+Strategy. 5. App-Side Architecture (mobile & web). 6. Backend
 Architecture & Low-Cost Infrastructure. 7. API Mapping, Setup Guide &
 Group Execution.
 

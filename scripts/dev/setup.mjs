@@ -1,4 +1,4 @@
-// "abhi setup": one guided pass that installs and configures everything for this PC.
+// "dev setup": one guided pass that installs and configures everything for this PC.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -38,12 +38,12 @@ async function addAbhiToPath() {
       '-Command',
       `$p=[Environment]::GetEnvironmentVariable('Path','User'); if (-not $p) { $p='' }; if (-not (($p -split ';') -contains '${p}')) { [Environment]::SetEnvironmentVariable('Path', ($p.TrimEnd(';') + ';${p}'), 'User'); 'added' } else { 'present' }`,
     ]);
-    if (r.ok) ui.ok(`"abhi" works from any new terminal ${ui.c.gray('(you can type abhi instead of .\\abhi)')}`);
-    else ui.warn('Could not update PATH. You can always run .\\abhi from the project folder.');
+    if (r.ok) ui.ok(`"dev" works from any new terminal ${ui.c.gray('(you can type dev instead of .\\dev)')}`);
+    else ui.warn('Could not update PATH. You can always run .\\dev from the project folder.');
   } else {
     const rc = process.env.SHELL?.includes('zsh') ? '~/.zshrc' : '~/.bashrc';
-    ui.info('To type "abhi" from anywhere, add this line to ' + rc + ':');
-    ui.cmd(`alias abhi="${ROOT}/abhi"`);
+    ui.info('To type "dev" from anywhere, add this line to ' + rc + ':');
+    ui.cmd(`alias dev="${ROOT}/dev"`);
   }
 }
 
@@ -79,7 +79,7 @@ export async function setup() {
   if (cmpVer(process.versions.node, MIN.node) < 0) {
     ui.warn(`Node.js ${MIN.node} or newer is required.`);
     if (await ui.confirm('Install the latest Node.js LTS now?', true)) await install('node');
-    ui.info('Close this terminal, open a new one, and run abhi setup again.');
+    ui.info('Close this terminal, open a new one, and run dev setup again.');
     return;
   }
   ui.ok(`Git ${run('git', ['--version'], { quiet: true }).stdout.replace(/[^\d.]+/g, ' ').trim().split(' ')[0]}`);
@@ -95,7 +95,7 @@ export async function setup() {
   // 4 ─ Repo
   ui.step(4, TOTAL, 'GitHub repository');
   if (!(await C.connectRepo())) {
-    ui.fail('Setup cannot continue without the repository. See: abhi help start');
+    ui.fail('Setup cannot continue without the repository. See: dev help start');
     return;
   }
   ui.ok(`Linked to ${REPO.web}`);
@@ -116,7 +116,7 @@ export async function setup() {
     if (st === 'ok') ui.ok('App dependencies already installed');
     else await C.installFrontend();
     ui.hint('To test on your phone: install "Expo Go" from the Play Store / App Store.');
-  } else ui.info('Skipped. Run abhi setup again anytime to add it.');
+  } else ui.info('Skipped. Run dev setup again anytime to add it.');
 
   // 6 ─ Backend
   ui.step(6, TOTAL, 'Backend: Python 3.12 + FastAPI');
@@ -150,7 +150,7 @@ export async function setup() {
     }
     if (p === 'docker') await install('docker');
   }
-  if (await ui.confirm('Let me type "abhi" from any terminal (adds this folder to your PATH)?', isWin)) await addAbhiToPath();
+  if (await ui.confirm('Let me type "dev" from any terminal (adds this folder to your PATH)?', isWin)) await addAbhiToPath();
 
   saveState({ setupDone: true, setupVersion: VERSION, setupAt: new Date().toISOString() });
 
@@ -161,13 +161,13 @@ export async function setup() {
   ui.blank();
   ui.box(
     problems.length
-      ? [ui.c.bold('Almost there.'), `Fix the ${problems.length} problem(s) above with ${ui.c.accent('abhi doctor')}.`]
+      ? [ui.c.bold('Almost there.'), `Fix the ${problems.length} problem(s) above with ${ui.c.accent('dev doctor')}.`]
       : [
           ui.c.bold('You are all set!'),
           '',
-          `Every time you sit down to work:   ${ui.c.accent(isWin ? '.\\abhi start' : './abhi start')}`,
-          `When you are done:                 ${ui.c.accent(isWin ? '.\\abhi finish' : './abhi finish')}`,
-          `Stuck or curious:                  ${ui.c.accent('abhi help')}`,
+          `Every time you sit down to work:   ${ui.c.accent(isWin ? '.\\dev start' : './dev start')}`,
+          `When you are done:                 ${ui.c.accent(isWin ? '.\\dev finish' : './dev finish')}`,
+          `Stuck or curious:                  ${ui.c.accent('dev help')}`,
         ],
     { title: problems.length ? 'Setup finished with problems' : 'Setup complete', tone: problems.length ? 'yellow' : 'green' },
   );

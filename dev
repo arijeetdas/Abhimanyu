@@ -2,14 +2,14 @@
 # ======================================================================
 #  Abhimanyu team toolkit - macOS / Linux / Git Bash launcher
 #
-#    ./abhi            interactive menu
-#    ./abhi start      sync with the team, update dependencies, run the app
-#    ./abhi finish     commit your work and push it to GitHub
-#    ./abhi help       every command + manual steps
+#    ./dev            interactive menu
+#    ./dev start      sync with the team, update dependencies, run the app
+#    ./dev finish     commit your work and push it to GitHub
+#    ./dev help       every command + manual steps
 #
 #  First time on a new machine: put this file in an empty "Abhimanyu"
-#  folder, run `chmod +x abhi && ./abhi`. It installs Git + Node.js if
-#  possible, downloads the project, then hands over to scripts/abhi/index.mjs.
+#  folder, run `chmod +x dev && ./dev`. It installs Git + Node.js if
+#  possible, downloads the project, then hands over to scripts/dev/index.mjs.
 # ======================================================================
 set -euo pipefail
 
@@ -17,20 +17,20 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_URL="https://github.com/arijeetdas/Abhimanyu.git"
 cd "$ROOT"
 
-say() { printf '  [abhi] %s\n' "$*"; }
+say() { printf '  [dev] %s\n' "$*"; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
 install_pkg() { # $1 = name, $2 = brew formula, $3 = apt package
   say "$1 is not installed."
   if [[ "$OSTYPE" == darwin* ]]; then
     if have brew; then brew install "$2"; else
-      say "Install Homebrew first: https://brew.sh  (then run ./abhi again)"; exit 1
+      say "Install Homebrew first: https://brew.sh  (then run ./dev again)"; exit 1
     fi
   elif have apt-get && [ -n "${3:-}" ]; then
     say "Installing $1 with apt (you may be asked for your password)..."
     sudo apt-get update -y && sudo apt-get install -y "$3"
   else
-    say "Please install $1 manually and run ./abhi again."; exit 1
+    say "Please install $1 manually and run ./dev again."; exit 1
   fi
 }
 
@@ -46,9 +46,9 @@ if ! have node; then
   fi
 fi
 
-if [ ! -f "$ROOT/scripts/abhi/index.mjs" ]; then
+if [ ! -f "$ROOT/scripts/dev/index.mjs" ]; then
   say "First run: downloading the project from GitHub into $ROOT"
-  others="$(ls -A | grep -v -x -e abhi -e abhi.cmd -e .git || true)"
+  others="$(ls -A | grep -v -x -e dev -e dev.cmd -e .git || true)"
   if [ -n "$others" ]; then
     say "This folder is not empty. Files with the same names as project files will be replaced."
     read -r -p "         Continue? (y/N) " ok
@@ -63,10 +63,10 @@ if [ ! -f "$ROOT/scripts/abhi/index.mjs" ]; then
     exit 1
   fi
   git reset -q origin/main
-  git checkout -- . ":(exclude)abhi"
+  git checkout -- . ":(exclude)dev"
   git branch -q --set-upstream-to=origin/main main
-  chmod +x "$ROOT/abhi" "$ROOT/.githooks/"* 2>/dev/null || true
+  chmod +x "$ROOT/dev" "$ROOT/.githooks/"* 2>/dev/null || true
   say "Project downloaded."
 fi
 
-exec node "$ROOT/scripts/abhi/index.mjs" "$@"
+exec node "$ROOT/scripts/dev/index.mjs" "$@"

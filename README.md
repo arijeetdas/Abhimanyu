@@ -296,7 +296,7 @@ The project's technical documentation is maintained in the `docs/` directory.
 | 🧰 [`Tech_Stack.md`](docs/Tech_Stack.md) | Technologies and development tools |
 | 🎨 [`UI_UX_GUIDELINES.md`](docs/UI_UX_GUIDELINES.md) | Interface design and user experience guidelines |
 | 🧭 [`ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md) | Stack decision (Expo universal app), repo layout, team workflow |
-| 🧑‍💻 [`DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md) | Setup, daily workflow, Git/GitHub by hand, troubleshooting |
+| 🧑‍💻 [`SETUP_AND_WORKFLOW.md`](docs/SETUP_AND_WORKFLOW.md) | Every step: setup, running the scripts, Git and GitHub for this project, troubleshooting |
 
 ## 🔬 Our Approach
 
@@ -361,11 +361,11 @@ The complete technology stack, frameworks, databases, AI models, and infrastruct
 
 ```text
 Abhimanyu/
-├── ⚙️ abhi / abhi.cmd       # Team toolkit: setup, sync, finish, rescue, help
+├── ⚙️ dev / dev.cmd       # Team toolkit: setup, sync, finish, rescue, help
 ├── 📁 frontend/             # Expo app: website + Android + iOS (one codebase)
 ├── 📁 backend/              # FastAPI service (agents, ingestion, workers to come)
 ├── 📁 docs/                 # Full technical documentation
-├── 📁 scripts/abhi/         # Toolkit source
+├── 📁 scripts/dev/         # Toolkit source
 ├── 📁 .github/workflows/    # CI: type-check, lint, build, tests
 └── 📄 README.md
 ```
@@ -376,23 +376,23 @@ Abhimanyu/
 
 ```powershell
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/abhi.cmd -OutFile abhi.cmd; .abhi setup
+irm https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/dev.cmd -OutFile dev.cmd; .dev setup
 ```
 
 ```bash
 # macOS / Linux
-curl -fsSLO https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/abhi && chmod +x abhi && ./abhi setup
+curl -fsSLO https://raw.githubusercontent.com/arijeetdas/Abhimanyu/main/dev && chmod +x dev && ./dev setup
 ```
 
 **Every session:**
 
 | | Windows | macOS / Linux |
 |---|---|---|
-| ▶️ Start (sync + run the app) | `.abhi start` | `./abhi start` |
-| ⬆️ Finish (commit + push) | `.abhi finish` | `./abhi finish` |
-| 🧭 Menu / 🆘 stuck / 📖 manual | `.abhi` · `.abhi rescue` · `.abhi help` | `./abhi` · `./abhi rescue` · `./abhi help` |
+| ▶️ Start (sync + run the app) | `.dev start` | `./dev start` |
+| ⬆️ Finish (commit + push) | `.dev finish` | `./dev finish` |
+| 🧭 Menu / 🆘 stuck / 📖 manual | `.dev` · `.dev rescue` · `.dev help` | `./dev` · `./dev rescue` · `./dev help` |
 
-📖 Full manual, including every step by hand: [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md) · 🧭 Why Expo and how we work: [`docs/ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md)
+📖 Full manual, including every step by hand: [`docs/SETUP_AND_WORKFLOW.md`](docs/SETUP_AND_WORKFLOW.md) · 🧭 Why Expo and how we work: [`docs/ENGINEERING_PLAN.md`](docs/ENGINEERING_PLAN.md)
 
 ## 👥 Development Team
 
@@ -448,10 +448,10 @@ Our goal is to build an intelligent system that makes corporate financial invest
 
 Contributions and ideas are welcome.
 
-1. ▶️ Run `abhi start` to get the latest work
-2. 🌿 For bigger features, `abhi branch` creates a feature branch
+1. ▶️ Run `dev start` to get the latest work
+2. 🌿 For bigger features, `dev branch` creates a feature branch
 3. ✍️ Update the relevant file in `docs/` if your change affects design
-4. 📝 `abhi finish` commits, adds a [`CHANGELOG`](docs/CHANGELOG.md) entry, and pushes (or opens a pull request)
+4. 📝 `dev finish` commits, adds a [`CHANGELOG`](docs/CHANGELOG.md) entry, and pushes (or opens a pull request)
 
 Outside contributors: fork the repository and open a pull request.
 

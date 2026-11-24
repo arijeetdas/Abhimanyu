@@ -11,7 +11,7 @@ const RULES = [
     why: 'The network request did not get through: no internet, captive Wi-Fi login, VPN/proxy, or firewall.',
     fixes: [
       'Check your internet connection (open github.com in a browser).',
-      'Nothing is lost: commits stay on your PC. Run "abhi sync" when you are back online.',
+      'Nothing is lost: commits stay on your PC. Run "dev sync" when you are back online.',
       'On a college/office network with a proxy:  git config --global http.proxy http://HOST:PORT',
     ],
     topic: 'troubleshoot',
@@ -37,7 +37,7 @@ const RULES = [
     why: 'You are signed in, but this account is not (yet) a collaborator, or you are signed in with a different account.',
     fixes: [
       `Accept the collaborator invite: ${REPO.web}/invitations  (also check your email)`,
-      'Make sure you are signed in with the invited account (see "abhi help github" to switch accounts).',
+      'Make sure you are signed in with the invited account (see "dev help github" to switch accounts).',
       'Ask the repo owner to check Settings > Collaborators on GitHub.',
     ],
     topic: 'github',
@@ -47,7 +47,7 @@ const RULES = [
     test: /protected branch|GH006|Changes must be made through a pull request|push declined due to repository rule/i,
     title: 'main is protected: changes must go through a pull request',
     why: 'The repo settings block direct pushes to main.',
-    fixes: ['Use a branch: run "abhi branch" -> "Start a new branch", then "abhi finish" opens a pull request.'],
+    fixes: ['Use a branch: run "dev branch" -> "Start a new branch", then "dev finish" opens a pull request.'],
     topic: 'git',
   },
   {
@@ -55,7 +55,7 @@ const RULES = [
     test: /\[rejected\]|Updates were rejected|fetch first|non-fast-forward|failed to push some refs/i,
     title: 'GitHub has newer changes than you',
     why: 'A teammate pushed while you were working. Their work must be combined with yours first.',
-    fixes: ['Run "abhi sync" (it combines both safely and then pushes).'],
+    fixes: ['Run "dev sync" (it combines both safely and then pushes).'],
     topic: 'daily',
   },
   {
@@ -64,7 +64,7 @@ const RULES = [
     title: 'A file is too big for GitHub (limit 100 MB)',
     why: 'Large files (datasets, PDFs, models, videos) cannot be pushed to a normal GitHub repo.',
     fixes: [
-      'Undo the commit (keeps your files):  abhi undo  -> "Undo my last commit"',
+      'Undo the commit (keeps your files):  dev undo  -> "Undo my last commit"',
       'Add the file or folder to .gitignore, then commit again.',
       'Share big data via Google Drive / Supabase storage, or use Git LFS.',
     ],
@@ -77,7 +77,7 @@ const RULES = [
     why: 'Another Git operation is running (VS Code, GitHub Desktop) or a previous one crashed.',
     fixes: [
       'Wait a few seconds and try again, or close other Git tools.',
-      'If nothing else is running: "abhi rescue" removes the stale lock for you.',
+      'If nothing else is running: "dev rescue" removes the stale lock for you.',
     ],
     topic: 'troubleshoot',
   },
@@ -94,7 +94,7 @@ const RULES = [
     test: /Your local changes to the following files would be overwritten|Please commit your changes or stash them|cannot (pull|rebase) with uncommitted changes|You have unstaged changes/i,
     title: 'Your unsaved edits are in the way',
     why: 'Git will not overwrite files you have changed but not committed.',
-    fixes: ['Run "abhi finish" to commit them first, or "abhi sync" (it puts them aside and back automatically).'],
+    fixes: ['Run "dev finish" to commit them first, or "dev sync" (it puts them aside and back automatically).'],
     topic: 'daily',
   },
   {
@@ -102,7 +102,7 @@ const RULES = [
     test: /untracked working tree files would be overwritten/i,
     title: 'A new file of yours has the same name as a teammate\'s file',
     why: 'A file you created (never committed) clashes with a file a teammate pushed.',
-    fixes: ['Rename or move your file, then sync again. Or commit it first with "abhi finish".'],
+    fixes: ['Rename or move your file, then sync again. Or commit it first with "dev finish".'],
     topic: 'conflicts',
   },
   {
@@ -110,7 +110,7 @@ const RULES = [
     test: /CONFLICT \(|Merge conflict in|could not apply|Resolve all conflicts|unmerged files|needs merge/i,
     title: 'Merge conflict: you and a teammate edited the same lines',
     why: 'Git cannot decide which version to keep, so it asks you.',
-    fixes: ['Run "abhi sync" or "abhi rescue" for a guided fix (keep yours, keep theirs, or edit).'],
+    fixes: ['Run "dev sync" or "dev rescue" for a guided fix (keep yours, keep theirs, or edit).'],
     topic: 'conflicts',
   },
   {
@@ -118,7 +118,7 @@ const RULES = [
     test: /refusing to merge unrelated histories/i,
     title: 'This folder\'s history is not connected to the GitHub repo',
     why: 'The folder was initialised separately (e.g. git init on a copy) instead of cloned.',
-    fixes: ['Run "abhi rescue" -> "Upload everything to a rescue branch", then clone fresh (see "abhi help start").'],
+    fixes: ['Run "dev rescue" -> "Upload everything to a rescue branch", then clone fresh (see "dev help start").'],
     topic: 'start',
   },
   {
@@ -142,7 +142,7 @@ const RULES = [
     test: /Please tell me who you are|unable to auto-detect email|empty ident name/i,
     title: 'Git does not know your name and email yet',
     why: 'Every commit records an author. Use the email of your GitHub account so commits link to you.',
-    fixes: ['Run "abhi setup", or:  git config --global user.name "Your Name"  and  git config --global user.email "you@example.com"'],
+    fixes: ['Run "dev setup", or:  git config --global user.name "Your Name"  and  git config --global user.email "you@example.com"'],
     topic: 'setup',
   },
   {
@@ -158,7 +158,7 @@ const RULES = [
     test: /npm ci.*can only install packages when your package\.json and package-lock\.json|`npm ci` can only install/i,
     title: 'package.json and package-lock.json do not match',
     why: 'Someone changed dependencies without committing the updated lock file.',
-    fixes: ['Run in frontend/:  npm install   then commit both files with "abhi finish".'],
+    fixes: ['Run in frontend/:  npm install   then commit both files with "dev finish".'],
     topic: 'run',
   },
   {
@@ -174,7 +174,7 @@ const RULES = [
     test: /EPERM|EBUSY|resource busy or locked|operation not permitted/i,
     title: 'A file is locked by another program',
     why: 'A running dev server, VS Code, or antivirus is holding a file open.',
-    fixes: ['Stop running dev servers (Ctrl+C), close extra terminals, then retry.', 'Still stuck: delete frontend/node_modules and run "abhi setup".'],
+    fixes: ['Stop running dev servers (Ctrl+C), close extra terminals, then retry.', 'Still stuck: delete frontend/node_modules and run "dev setup".'],
     topic: 'troubleshoot',
   },
   {
@@ -190,7 +190,7 @@ const RULES = [
     test: /ENOSPC|No space left on device|not enough space/i,
     title: 'Disk is full',
     why: 'Dependencies (node_modules, Python packages) need a few GB of free space.',
-    fixes: ['Free up disk space, then run "abhi setup" again.'],
+    fixes: ['Free up disk space, then run "dev setup" again.'],
     topic: 'troubleshoot',
   },
   {
@@ -198,7 +198,7 @@ const RULES = [
     test: /No interpreter found|requires-python|Python .* (not found|is not installed)|No Python at/i,
     title: 'Python 3.12 is not available',
     why: 'The backend uses Python 3.12 managed by uv.',
-    fixes: ['Run:  uv python install 3.12   (or "abhi setup")'],
+    fixes: ['Run:  uv python install 3.12   (or "dev setup")'],
     topic: 'setup',
   },
   {
@@ -225,8 +225,8 @@ export function explain(text, { fallbackTitle = 'Something went wrong' } = {}) {
         '',
         ...(text ? text.split(/\r?\n/).filter((l) => l.trim()).slice(-8).map((l) => ui.c.gray(ui.truncate(ui.strip(l), ui.cols() - 10))) : []),
         '',
-        `Try:  ${ui.c.accent('abhi doctor')}   or   ${ui.c.accent('abhi rescue')}`,
-        `Manual steps:  ${ui.c.accent('abhi help troubleshoot')}`,
+        `Try:  ${ui.c.accent('dev doctor')}   or   ${ui.c.accent('dev rescue')}`,
+        `Manual steps:  ${ui.c.accent('dev help troubleshoot')}`,
       ],
       { title: 'Problem', tone: 'red' },
     );
@@ -241,7 +241,7 @@ export function explain(text, { fallbackTitle = 'Something went wrong' } = {}) {
         ui.c.bold('What to do'),
         ...r.fixes.map((f, i) => `${ui.c.accent(`${i + 1}.`)} ${f}`),
         '',
-        ui.c.gray(`More: abhi help ${r.topic}`),
+        ui.c.gray(`More: dev help ${r.topic}`),
       ],
       { title: 'Problem', tone: 'yellow' },
     );

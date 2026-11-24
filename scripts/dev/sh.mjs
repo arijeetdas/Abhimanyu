@@ -20,13 +20,13 @@ function prep(cmd, args) {
   return { file: cmd, args, shell: false };
 }
 
-// ─── Log file (.abhi/logs/abhi-YYYY-MM-DD.log) for "what exactly happened?" ─────
+// ─── Log file (.dev/logs/dev-YYYY-MM-DD.log) for "what exactly happened?" ─────
 
 let logPath;
 export function logFile() {
   if (!logPath) {
     fs.mkdirSync(PATHS.logs, { recursive: true });
-    logPath = path.join(PATHS.logs, `abhi-${new Date().toISOString().slice(0, 10)}.log`);
+    logPath = path.join(PATHS.logs, `dev-${new Date().toISOString().slice(0, 10)}.log`);
   }
   return logPath;
 }
