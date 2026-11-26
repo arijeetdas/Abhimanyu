@@ -4,11 +4,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import * as C from './checks.mjs';
-import { loadState, MAIN, needsPython, PATHS, ROOT, saveState } from './config.mjs';
+import { loadState, MAIN, MIN, needsPython, PATHS, ROOT, saveState } from './config.mjs';
 import { explain, matches } from './diagnose.mjs';
 import * as G from './git.mjs';
 import { report, scanStaged, stagedFiles } from './safety.mjs';
-import { openTerminal, openUrl, run, runLive, task, which } from './sh.mjs';
+import { cmpVer, openTerminal, openUrl, run, runLive, task, which } from './sh.mjs';
 import * as ui from './ui.mjs';
 
 const { c, sym } = ui;
@@ -340,6 +340,12 @@ export const TARGETS = [
 const API_ARGS = ['run', 'uvicorn', 'app.main:app', '--reload', '--host', '0.0.0.0', '--port', '8000'];
 
 export async function runTarget(target) {
+  if (['web', 'phone', 'tunnel', 'android', 'all'].includes(target) && cmpVer(process.versions.node, MIN.node) < 0) {
+    ui.warn(`Node.js ${MIN.node} or newer is required to run the Expo app (detected ${process.versions.node}).`);
+    ui.hint(`Run ${launcher} setup to install Node.js LTS, then close and reopen the terminal.`);
+    process.exitCode = 1;
+    return { code: 1 };
+  }
   if (['web', 'phone', 'tunnel', 'android', 'all'].includes(target) && C.frontendDeps() !== 'ok') {
     if (!(await C.installFrontend())) return { code: 1 };
   }

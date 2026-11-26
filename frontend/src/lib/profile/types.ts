@@ -113,14 +113,37 @@ export function emptyProfile(displayName = ''): UserProfile {
 /** Fill fields added in later versions so old saved profiles keep working. */
 export function normalizeProfile(raw: Partial<UserProfile> | null | undefined, fallbackName = ''): UserProfile {
   const base = emptyProfile(fallbackName);
-  if (!raw) return base;
+  if (!raw || typeof raw !== 'object') return base;
+  const np = raw.notificationPrefs;
+  const qh = np?.quiet_hours;
   return {
     ...base,
     ...raw,
-    notificationPrefs: { ...base.notificationPrefs, ...raw.notificationPrefs, quiet_hours: { ...base.notificationPrefs.quiet_hours, ...raw.notificationPrefs?.quiet_hours } },
-    locale: { ...base.locale, ...raw.locale },
-    consents: { ...base.consents, ...raw.consents },
-    onboarding: { ...base.onboarding, ...raw.onboarding },
+    displayName: typeof raw.displayName === 'string' && raw.displayName ? raw.displayName : base.displayName,
+    organisation: typeof raw.organisation === 'string' ? raw.organisation : base.organisation,
+    explanationStyle: raw.explanationStyle ?? base.explanationStyle,
+    goals: Array.isArray(raw.goals) ? raw.goals : base.goals,
+    exchanges: Array.isArray(raw.exchanges) ? raw.exchanges : base.exchanges,
+    sectors: Array.isArray(raw.sectors) ? raw.sectors : base.sectors,
+    marketCaps: Array.isArray(raw.marketCaps) ? raw.marketCaps : base.marketCaps,
+    watchlist: Array.isArray(raw.watchlist) ? raw.watchlist : base.watchlist,
+    portfolioSource: raw.portfolioSource ?? base.portfolioSource,
+    focusDomains: Array.isArray(raw.focusDomains) ? raw.focusDomains : base.focusDomains,
+    notificationPrefs: {
+      ...base.notificationPrefs,
+      ...(np && typeof np === 'object' ? np : {}),
+      channels: Array.isArray(np?.channels) ? np.channels : base.notificationPrefs.channels,
+      min_severity: np?.min_severity ?? base.notificationPrefs.min_severity,
+      digest: np?.digest ?? base.notificationPrefs.digest,
+      whatsapp_number: typeof np?.whatsapp_number === 'string' ? np.whatsapp_number : base.notificationPrefs.whatsapp_number,
+      quiet_hours: {
+        ...base.notificationPrefs.quiet_hours,
+        ...(qh && typeof qh === 'object' ? qh : {}),
+      },
+    },
+    locale: { ...base.locale, ...(raw.locale && typeof raw.locale === 'object' ? raw.locale : {}) },
+    consents: { ...base.consents, ...(raw.consents && typeof raw.consents === 'object' ? raw.consents : {}) },
+    onboarding: { ...base.onboarding, ...(raw.onboarding && typeof raw.onboarding === 'object' ? raw.onboarding : {}) },
     version: PROFILE_VERSION,
   };
 }

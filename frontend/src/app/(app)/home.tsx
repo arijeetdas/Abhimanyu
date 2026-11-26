@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ShaderBackdrop } from '@/components/backdrop/shader-backdrop';
 import { LoadingScreen } from '@/components/loading-screen';
 import { Button } from '@/components/ui/button';
-import { Divider, Wordmark } from '@/components/ui/misc';
+import { Divider, Notice, Wordmark } from '@/components/ui/misc';
 import { Text } from '@/components/ui/text';
 import { Motion, Radius } from '@/constants/theme';
 import { useApiHealth } from '@/hooks/use-api-health';
@@ -90,6 +90,14 @@ export default function HomeScreen() {
               <Button label="Check" size="sm" variant="ghost" onPress={recheck} />
             </View>
           </View>
+
+          {mode === 'demo' && (
+            <Notice>
+              <Text variant="caption" tone="textSecondary">
+                Demo mode: accounts and profiles are saved only on this device. Connect Firebase to enable cloud accounts and profile sync.
+              </Text>
+            </Notice>
+          )}
 
           <View style={styles.actions}>
             <Button label="Redo onboarding" variant="secondary" onPress={() => restartOnboarding()} />

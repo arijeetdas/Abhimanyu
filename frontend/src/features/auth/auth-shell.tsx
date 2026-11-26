@@ -44,7 +44,7 @@ export function AuthShell({ title, subtitle, children, footer }: { title: string
           {mode === 'demo' && (
             <Notice>
               <Text variant="caption" tone="textSecondary">
-                Demo mode: accounts are saved only on this device until Firebase is connected (see docs/SETUP_AND_WORKFLOW.md).
+                Demo mode: accounts and profiles are saved only on this device. Connect Firebase to enable cloud accounts and profile sync.
               </Text>
             </Notice>
           )}

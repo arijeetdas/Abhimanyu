@@ -40,15 +40,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Changed
 - Frontend stack: one Expo (React Native, TypeScript) codebase for the web dashboard and the Android/iOS app (see `ENGINEERING_PLAN.md`). Flutter/Dart are not used in this project; all docs updated accordingly.
 - Team toolkit command renamed from `abhi` to `dev` (`dev.cmd`, `dev`, `scripts/dev/`); local state moves from `.abhi/` to `.dev/` automatically. `docs/DEVELOPER_GUIDE.md` merged into `docs/SETUP_AND_WORKFLOW.md`.
+- Firebase sign-in now uses browser persistence on web and AsyncStorage-backed persistence on Android/iOS; profile loading prefers the most recently updated local or Firestore copy, retaining local data when Firestore is unavailable.
+- Demo-mode users are reminded at the end of onboarding and on home that accounts and profiles stay on this device until Firebase is connected.
 
 ### Fixed
+- `dev run` now requires Node.js 22.13.0 or newer for Expo and reports the required upgrade before starting Metro; the frontend engine requirement matches.
 - Landing page returned HTTP 500 on the dev server (`dev run web`): link buttons passed a style array to `<Link asChild>`; styles are now flattened.
 - Pinned `three` to ~0.186: three 0.187 removed the `cube_uv_reflection_fragment` shader chunk that `@shadergradient/react` needs, which left the gradient blank.
 - Toolkit: Windows short (8.3) folder paths made a valid clone look unlinked, which could reset the branch during a sync; paths are now compared after full expansion, and an existing `.git` is never re-initialised.
 - Backend: empty values in `backend/.env` no longer break settings loading.
 
 ### Security
-- _Nothing yet._
+- Firestore rules deny access by default and restrict profile reads and writes to the authenticated owner; client-side deletes are denied. Auth and Firestore emulator ports are configured for isolated local rule checks.
 
 ---
 

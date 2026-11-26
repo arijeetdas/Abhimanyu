@@ -505,7 +505,7 @@ function Consent({ p, set }: StepProps) {
   );
 }
 
-function Review({ p }: StepProps) {
+function Review({ p, mode }: StepProps) {
   const t = useTheme();
   const rows: [string, string][] = [
     ['Name', p.displayName || 'Not set'],
@@ -533,6 +533,13 @@ function Review({ p }: StepProps) {
           </View>
         </View>
       ))}
+      {mode === 'demo' && (
+        <Notice>
+          <Text variant="caption" tone="textSecondary">
+            Demo mode: accounts and profiles are saved only on this device. Connect Firebase to enable cloud accounts and profile sync.
+          </Text>
+        </Notice>
+      )}
     </View>
   );
 }
