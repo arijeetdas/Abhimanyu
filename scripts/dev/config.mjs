@@ -16,7 +16,7 @@ export const REPO = {
 
 export const MAIN = 'main';
 
-export const MIN = { git: '2.30.0', node: '20.19.4', python: '3.12' };
+export const MIN = { git: '2.30.0', node: '22.13.0', python: '3.12' };
 
 export const PATHS = {
   frontend: path.join(ROOT, 'frontend'),

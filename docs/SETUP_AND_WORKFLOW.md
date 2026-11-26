@@ -88,7 +88,7 @@ Then **`dev setup`** walks through seven steps. Use the arrow keys, Space to tic
 | Step | What it does | What you do |
 |---|---|---|
 | 1. What will you work on? | Picks what to install: Frontend, Backend API, Agentic AI, Data pipelines, ML & graph | Tick your areas (Space), press Enter |
-| 2. Core tools | Confirms Node.js 20.19+ and Git are available | Nothing, unless Node is too old (it offers to update) |
+| 2. Core tools | Confirms Node.js 22.13+ and Git are available | Nothing, unless Node is too old (it offers to update) |
 | 3. Your Git identity | Sets `user.name` and `user.email` for your commits | Type your full name and your **GitHub email** |
 | 4. GitHub repository | Links the folder to GitHub, applies team Git settings, tests access | A **browser sign-in window** may open: sign in to GitHub and approve |
 | 5. App | Installs the app packages (`npm ci` in `frontend/`) | Wait a few minutes the first time |
@@ -714,6 +714,7 @@ The first run asks to create an EAS project and a build profile; accept the defa
 | "running scripts is disabled on this system" | You ran a `.ps1` file. Use `.\dev` (a `.cmd` file, not affected). |
 | Tool installed but "not found" | Close the terminal, open a new one, run dev again. |
 | GitHub sign-in fails / 403 / repository not found | [Section 8.3](#83-using-the-wrong-account-or-permission-denied--403--repository-not-found) |
+| `URL.parse is not a function` or Expo reports an unsupported Node.js version | Install Node.js 22.13.0 or newer with `dev setup`, then close and reopen the terminal before running the app again. |
 | Phone cannot load the app | Same Wi-Fi for phone and PC; college Wi-Fi often blocks it: use `dev run tunnel` or a hotspot. |
 | App on the phone says backend Offline | Run `dev run backend`; allow Python through the Windows firewall when asked. |
 | "Port 8081/8000 already in use" | It is already running in another window. Use that one, or stop it with Ctrl+C. |
@@ -800,27 +801,47 @@ EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXX
 ```
 
 Then stop the app (Ctrl+C) and run `dev run web` again: Expo reads `.env.local` only at start. The demo
-mode note disappears from the log in screen. Every teammate needs the same values in their own `.env.local`.
+mode note disappears from the log in screen. Every teammate needs the same values in their own `.env.local`
+(shared privately by the teammate who owns the Firebase project, never committed to Git).
 
 ### 15.4 Firestore security rules
 
-Each user can read and write only their own profile document:
+The rules and index config are versioned in the repository at `firestore.rules`, `firestore.indexes.json`,
+`firebase.json` and `.firebaserc`:
 
-```text
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-  }
-}
+- Everything is denied by default.
+- For `users/{uid}`, only the signed-in owner (`request.auth.uid == uid`) can read, create or update their
+  own document, with only the keys `profile`, `email` and `updatedAt` (`updatedAt == request.time`,
+  `email` matching the auth token). Client-side deletes are disallowed (`allow delete: if false`).
+
+To deploy rule or index changes without a global Firebase CLI install, run from the repository root:
+
+```bash
+npx firebase-tools login
+npx firebase-tools deploy --only firestore:rules,firestore:indexes
+```
+
+For isolated local Auth and Firestore rule checks, start the emulators with a demo project ID:
+
+```bash
+npx firebase-tools emulators:start --only auth,firestore --project demo-abhimanyu
 ```
 
 If Firestore is not set up yet, sign-in still works and profiles stay on the device (a warning appears in the
-browser console). `EXPO_PUBLIC_FIREBASE_USE_FIRESTORE=false` turns the Firestore copy off.
+console). `EXPO_PUBLIC_FIREBASE_USE_FIRESTORE=false` turns the Firestore copy off.
 
-### 15.5 What onboarding stores
+### 15.5 Sign-in and profile persistence
+
+- On web, Firebase Auth uses its default browser persistence (IndexedDB, with browser storage fallbacks) so a
+  signed-in session survives reloads. On Android and iOS, it uses Firebase's React Native persistence backed by
+  AsyncStorage.
+- The app also keeps a per-user profile copy through AsyncStorage (local storage on web). When Firestore is
+  enabled, it reads and writes `users/{uid}`. If a cloud read or write fails, the local profile remains available
+  and the failure is logged.
+- On sign-in, the profile copy with the newer `updatedAt` is used. This allows a newer local copy to remain
+  available after an offline or failed cloud write.
+
+### 15.6 What onboarding stores
 
 `users/{uid}` holds `{ profile, email, updatedAt }`. `profile` follows `docs/DATA_SCHEMA.md` and
 `PATCH /auth/me` in `docs/API_SPECIFICATION.md`: role, experience and explanation style, risk tolerance,

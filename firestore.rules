@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function validEmail() {
+      return !('email' in request.auth.token) || request.auth.token.email == null
+        ? request.resource.data.email == null
+        : request.resource.data.email == request.auth.token.email;
+    }
+
+    function reasonableProfile(profile) {
+      return profile is map
+        && profile.size() <= 40
+        && (!('displayName' in profile) || (profile.displayName is string && profile.displayName.size() <= 200))
+        && (!('organisation' in profile) || (profile.organisation is string && profile.organisation.size() <= 200))
+        && (!('goals' in profile) || (profile.goals is list && profile.goals.size() <= 20))
+        && (!('exchanges' in profile) || (profile.exchanges is list && profile.exchanges.size() <= 10))
+        && (!('sectors' in profile) || (profile.sectors is list && profile.sectors.size() <= 30))
+        && (!('marketCaps' in profile) || (profile.marketCaps is list && profile.marketCaps.size() <= 10))
+        && (!('watchlist' in profile) || (profile.watchlist is list && profile.watchlist.size() <= 100))
+        && (!('focusDomains' in profile) || (profile.focusDomains is list && profile.focusDomains.size() <= 20));
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['profile', 'email', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['profile', 'email', 'updatedAt'])
+        && reasonableProfile(request.resource.data.profile)
+        && validEmail()
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

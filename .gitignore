@@ -5,7 +5,7 @@
 *.pem
 *.key
 *service-account*.json
-firebase-adminsdk*.json
+*firebase-adminsdk*.json
 google-services.json
 GoogleService-Info.plist
 

@@ -4,7 +4,7 @@
 
 const [major] = process.versions.node.split('.').map(Number);
 if (major < 18) {
-  console.error(`\n  dev needs Node.js 20 or newer (you have ${process.versions.node}).`);
+  console.error(`\n  The dev launcher needs Node.js 18 or newer (you have ${process.versions.node}).`);
   console.error('  Install the LTS from https://nodejs.org and open a new terminal.\n');
   process.exit(1);
 }

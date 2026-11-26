@@ -136,8 +136,9 @@ Exit criteria: everyone can run app + API locally, the first `feat` commits from
 - **Route guards.** `Stack.Protected` in `src/app/_layout.tsx` with `redirectTo`: signed-out users only see the
   auth screens, signed-in users without onboarding see `/onboarding`, everyone else `/home`.
 - **Auth.** `src/providers/auth-provider.tsx` over two backends: Firebase Authentication (+ Firestore profile in
-  `users/{uid}`) when `frontend/.env.local` has the keys, otherwise a local demo backend. See
-  [SETUP_AND_WORKFLOW.md](SETUP_AND_WORKFLOW.md) section 15.
+  `users/{uid}`) is live when `frontend/.env.local` has the project keys, with a local demo backend as fallback.
+  Firestore security rules and config are versioned at the repository root (`firebase.json`, `.firebaserc`,
+  `firestore.rules`, `firestore.indexes.json`). See [SETUP_AND_WORKFLOW.md](SETUP_AND_WORKFLOW.md) section 15.
 - **Onboarding.** Ten steps: welcome, about you, experience (with a live preview of explanation styles),
   goals and markets, sectors, watchlist and holdings, red-flag domains and alert threshold, channels and timing
   (incl. quiet hours, language, number format), consent (DPDP Act 2023), review. Optional steps can be skipped,

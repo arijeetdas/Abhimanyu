@@ -47,16 +47,25 @@ function getBackend(): Promise<AuthBackend> {
 }
 
 async function loadProfile(backend: AuthBackend, user: AuthUser): Promise<UserProfile | null> {
-  let raw: Partial<UserProfile> | null = null;
+  const local = await getJSON<Partial<UserProfile>>(localKey(user.uid));
+  let remote: Partial<UserProfile> | null = null;
   if (backend.loadRemoteProfile) {
     try {
-      raw = await backend.loadRemoteProfile(user.uid);
+      remote = await backend.loadRemoteProfile(user.uid);
     } catch (e) {
       console.warn('[profile] Firestore read failed, using the copy on this device.', e);
     }
   }
-  raw ??= await getJSON<Partial<UserProfile>>(localKey(user.uid));
-  return raw ? normalizeProfile(raw, user.displayName) : null;
+  const rTime = remote?.updatedAt ? Date.parse(remote.updatedAt) || 0 : 0;
+  const lTime = local?.updatedAt ? Date.parse(local.updatedAt) || 0 : 0;
+  // Prefer Firestore unless the local copy is strictly newer (e.g. after a failed remote write).
+  const raw = remote && (!local || rTime >= lTime) ? remote : local;
+  if (!raw) return null;
+  const normalized = normalizeProfile(raw, user.displayName);
+  if (raw === remote && !local) {
+    setJSON(localKey(user.uid), normalized).catch(() => undefined);
+  }
+  return normalized;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -103,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!u) return;
     const next = { ...p, updatedAt: new Date().toISOString() };
     setProfile(next);
-    await setJSON(localKey(u.uid), next);
+    await setJSON(localKey(u.uid), next).catch((e) => console.warn('[profile] Local save failed.', e));
     if (b.saveRemoteProfile) {
       b.saveRemoteProfile(u.uid, next).catch((e) => console.warn('[profile] Firestore write failed; kept on this device.', e));
     }
@@ -127,8 +136,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const u = await b.register(input);
           const starter = emptyProfile(input.name.trim());
           starter.consents.termsAcceptedAt = new Date().toISOString();
-          await setJSON(localKey(u.uid), starter);
-          b.saveRemoteProfile?.(u.uid, starter).catch(() => undefined);
+          await setJSON(localKey(u.uid), starter).catch((e) => console.warn('[profile] Local save failed.', e));
+          b.saveRemoteProfile?.(u.uid, starter).catch((e) => console.warn('[profile] Initial Firestore write failed; kept on this device.', e));
         } finally {
           done();
           registering.current = null;
